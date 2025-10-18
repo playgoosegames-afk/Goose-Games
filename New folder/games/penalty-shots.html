@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penalty Shots ⚽ - Goose Games</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/game-page.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="nav">
+                <a href="../index.html" class="logo"><span class="logo-icon">🦆</span><span class="logo-text">GOOSE GAMES</span></a>
+                <a href="../index.html" class="btn btn-secondary">← Back</a>
+            </div>
+        </div>
+    </header>
+    <div class="game-page">
+        <div class="container">
+            <div class="game-header">
+                <div class="game-header-content">
+                    <h1 class="game-page-title">⚽ Penalty Shots</h1>
+                    <p class="game-page-subtitle">Simple pull-and-shoot soccer fun!</p>
+                    <div class="game-meta">
+                        <span class="meta-item">⚽ Soccer</span>
+                        <span class="meta-item">🔥 #8 Trending</span>
+                    </div>
+                </div>
+            </div>
+            <div class="game-player-wrapper">
+                <div class="game-player">
+                    <iframe src="https://scratch.mit.edu/projects/798648038/embed" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
+                </div>
+                <div class="game-controls-hint">
+                    <p>💡 <strong>Controls:</strong> Pull back and release to shoot!</p>
+                </div>
+            </div>
+            <div class="game-info-section">
+                <div class="info-tabs">
+                    <button class="info-tab active" data-tab="about">About</button>
+                    <button class="info-tab" data-tab="howto">How to Play</button>
+                </div>
+                <div class="tab-content active" id="about">
+                    <h2>About Penalty Shots</h2>
+                    <p>Score goals with simple pull-and-shoot mechanics! Perfect for quick soccer fun. #8 trending game!</p>
+                    <div class="creator-credit">
+                        <p><strong>Created by:</strong> <a href="https://scratch.mit.edu/users/-Battles-/" target="_blank">@-Battles-</a></p>
+                    </div>
+                </div>
+                <div class="tab-content" id="howto">
+                    <h2>How to Play</h2>
+                    <div class="instructions">
+                        <h3>🎮 Controls</h3>
+                        <ul>
+                            <li><strong>Mouse</strong> - Aim your shot</li>
+                            <li><strong>Pull back</strong> - Set power</li>
+                            <li><strong>Release</strong> - Shoot!</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2025 Goose Games.</p>
+            </div>
+        </div>
+    </footer>
+    <script src="../js/main.js"></script>
+    <script>
+        document.querySelectorAll('.info-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.info-tab, .tab-content').forEach(el => el.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

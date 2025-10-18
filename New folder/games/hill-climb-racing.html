@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Play Hill Climb Racing - Physics-based hill climbing fun! Free racing game for kids.">
+    <title>Hill Climb Racing 🏔️ - Goose Games</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/game-page.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="nav">
+                <a href="../index.html" class="logo">
+                    <span class="logo-icon">🦆</span>
+                    <span class="logo-text">GOOSE GAMES</span>
+                </a>
+                <nav class="nav-menu">
+                    <a href="../index.html#puzzle" class="nav-link">Puzzle</a>
+                    <a href="../index.html#racing" class="nav-link">Racing</a>
+                    <a href="../index.html#sports" class="nav-link">Sports</a>
+                    <a href="../index.html#creative" class="nav-link">Creative</a>
+                </nav>
+                <a href="../index.html" class="btn btn-secondary">← Back</a>
+            </div>
+        </div>
+    </header>
+    <div class="game-page">
+        <div class="container">
+            <div class="game-header">
+                <div class="game-header-content">
+                    <h1 class="game-page-title">🏔️ Hill Climb Racing</h1>
+                    <p class="game-page-subtitle">Physics-based hill climbing adventure!</p>
+                    <div class="game-meta">
+                        <span class="meta-item">🏎️ Racing</span>
+                        <span class="meta-item">⚡ Physics</span>
+                        <span class="meta-item">🏔️ Hills</span>
+                    </div>
+                </div>
+            </div>
+            <div class="game-player-wrapper">
+                <div class="game-player">
+                    <iframe src="https://scratch.mit.edu/projects/56667360/embed" allowtransparency="true" width="100%" height="100%" frameborder="0" scrolling="no" allowfullscreen></iframe>
+                </div>
+                <div class="game-controls-hint">
+                    <p>💡 <strong>Controls:</strong> Arrow Keys to accelerate and balance your vehicle!</p>
+                </div>
+            </div>
+            <div class="game-info-section">
+                <div class="info-tabs">
+                    <button class="info-tab active" data-tab="about">About</button>
+                    <button class="info-tab" data-tab="howto">How to Play</button>
+                    <button class="info-tab" data-tab="features">Features</button>
+                </div>
+                <div class="tab-content active" id="about">
+                    <h2>About Hill Climb Racing</h2>
+                    <p>Experience the thrill of physics-based hill climbing! Navigate challenging terrain, perform flips, and see how far you can go in this addictive racing game based on the popular mobile game.</p>
+                    <p>Skills developed:</p>
+                    <ul>
+                        <li>⚖️ <strong>Balance & Control</strong> - Master vehicle physics</li>
+                        <li>🎯 <strong>Timing</strong> - Perfect your acceleration</li>
+                        <li>🧠 <strong>Physics Understanding</strong> - Learn about momentum and gravity</li>
+                    </ul>
+                    <div class="creator-credit">
+                        <p><strong>Created by:</strong> <a href="https://scratch.mit.edu/users/WO997/" target="_blank">@WO997</a> on Scratch</p>
+                    </div>
+                </div>
+                <div class="tab-content" id="howto">
+                    <h2>How to Play</h2>
+                    <div class="instructions">
+                        <h3>🎮 Controls</h3>
+                        <ul>
+                            <li><strong>Up Arrow</strong> - Accelerate</li>
+                            <li><strong>Down Arrow</strong> - Brake</li>
+                            <li><strong>Left/Right</strong> - Balance vehicle</li>
+                        </ul>
+                        <h3>💡 Tips</h3>
+                        <ul>
+                            <li>Balance is key - don't flip over!</li>
+                            <li>Use momentum on downhills</li>
+                            <li>Land on your wheels</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="tab-content" id="features">
+                    <h2>Features</h2>
+                    <div class="features-grid">
+                        <div class="feature-card"><div class="feature-icon">⚡</div><h3>Physics Engine</h3><p>Realistic vehicle physics</p></div>
+                        <div class="feature-card"><div class="feature-icon">🏔️</div><h3>Challenging Hills</h3><p>Ever-changing terrain</p></div>
+                        <div class="feature-card"><div class="feature-icon">🎮</div><h3>Simple Controls</h3><p>Easy to learn, hard to master</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2025 Goose Games. Game by @WO997 on Scratch.</p>
+            </div>
+        </div>
+    </footer>
+    <script src="../js/main.js"></script>
+    <script>
+        document.querySelectorAll('.info-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.info-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
