@@ -1,0 +1,688 @@
+/* ============================================
+   GOOSE GAMES - NEON STYLE
+   Bright, vibrant, Poki-inspired design
+   ============================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Neon Colors */
+    --neon-pink: #FF10F0;
+    --neon-cyan: #00F5FF;
+    --neon-yellow: #FFFF00;
+    --neon-green: #39FF14;
+    --neon-purple: #BC13FE;
+    --neon-blue: #4D4DFF;
+    --neon-orange: #FF6600;
+    
+    /* Background */
+    --bg-dark: #0A0E27;
+    --bg-darker: #050810;
+    --card-bg: #1a1f3a;
+    --card-hover: #252b4a;
+    
+    /* Text */
+    --text-white: #FFFFFF;
+    --text-gray: #B8C5D6;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-white);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* ============================================
+   ANIMATED BACKGROUND
+   ============================================ */
+
+.background-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(255, 16, 240, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(0, 245, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 20%, rgba(57, 255, 20, 0.08) 0%, transparent 50%),
+        linear-gradient(135deg, #0A0E27 0%, #050810 100%);
+    animation: backgroundShift 20s ease infinite;
+}
+
+@keyframes backgroundShift {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+
+header {
+    background: rgba(10, 14, 39, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 2px solid rgba(255, 16, 240, 0.3);
+    box-shadow: 0 4px 20px rgba(255, 16, 240, 0.2);
+}
+
+header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.goose-icon {
+    font-size: 2.5rem;
+    animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.logo h1 {
+    font-size: 1.8rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+}
+
+.neon-text {
+    color: var(--neon-pink);
+    text-shadow: 
+        0 0 10px var(--neon-pink),
+        0 0 20px var(--neon-pink),
+        0 0 30px var(--neon-pink);
+    animation: neonPulse 2s ease-in-out infinite;
+}
+
+@keyframes neonPulse {
+    0%, 100% { text-shadow: 0 0 10px var(--neon-pink), 0 0 20px var(--neon-pink); }
+    50% { text-shadow: 0 0 20px var(--neon-pink), 0 0 40px var(--neon-pink), 0 0 60px var(--neon-pink); }
+}
+
+nav {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-link {
+    color: var(--text-gray);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: var(--neon-cyan);
+    background: rgba(0, 245, 255, 0.1);
+    text-shadow: 0 0 10px var(--neon-cyan);
+}
+
+/* ============================================
+   HERO SECTION
+   ============================================ */
+
+.hero {
+    padding: 4rem 2rem;
+    text-align: center;
+    background: radial-gradient(circle at center, rgba(255, 16, 240, 0.15) 0%, transparent 70%);
+}
+
+.hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.hero-title {
+    font-size: 4rem;
+    font-weight: 900;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.neon-glow {
+    color: var(--neon-cyan);
+    text-shadow: 
+        0 0 20px var(--neon-cyan),
+        0 0 40px var(--neon-cyan),
+        0 0 60px var(--neon-cyan),
+        0 0 80px var(--neon-cyan);
+    animation: glowPulse 3s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+    0%, 100% { 
+        text-shadow: 
+            0 0 20px var(--neon-cyan),
+            0 0 40px var(--neon-cyan);
+    }
+    50% { 
+        text-shadow: 
+            0 0 30px var(--neon-cyan),
+            0 0 60px var(--neon-cyan),
+            0 0 90px var(--neon-cyan);
+    }
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    color: var(--text-gray);
+    font-weight: 500;
+}
+
+/* ============================================
+   CONTAINER & MASONRY GRID
+   ============================================ */
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+main.container {
+    padding: 3rem 2rem;
+}
+
+.masonry-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    grid-auto-rows: 20px;
+}
+
+/* ============================================
+   GAME CARDS
+   ============================================ */
+
+.game-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    animation: fadeInUp 0.6s ease-out backwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Stagger animation delays */
+.game-card:nth-child(1) { animation-delay: 0.1s; }
+.game-card:nth-child(2) { animation-delay: 0.2s; }
+.game-card:nth-child(3) { animation-delay: 0.3s; }
+.game-card:nth-child(4) { animation-delay: 0.4s; }
+.game-card:nth-child(5) { animation-delay: 0.5s; }
+.game-card:nth-child(6) { animation-delay: 0.6s; }
+.game-card:nth-child(7) { animation-delay: 0.7s; }
+.game-card:nth-child(8) { animation-delay: 0.8s; }
+.game-card:nth-child(9) { animation-delay: 0.9s; }
+.game-card:nth-child(10) { animation-delay: 1s; }
+
+/* Card Sizes */
+.game-card.small {
+    grid-row-end: span 14;
+}
+
+.game-card.medium {
+    grid-row-end: span 18;
+}
+
+.game-card.large {
+    grid-row-end: span 22;
+}
+
+/* Neon Borders */
+.neon-border-pink {
+    border: 2px solid rgba(255, 16, 240, 0.3);
+    box-shadow: 0 0 20px rgba(255, 16, 240, 0.2);
+}
+
+.neon-border-cyan {
+    border: 2px solid rgba(0, 245, 255, 0.3);
+    box-shadow: 0 0 20px rgba(0, 245, 255, 0.2);
+}
+
+.neon-border-yellow {
+    border: 2px solid rgba(255, 255, 0, 0.3);
+    box-shadow: 0 0 20px rgba(255, 255, 0, 0.2);
+}
+
+.neon-border-green {
+    border: 2px solid rgba(57, 255, 20, 0.3);
+    box-shadow: 0 0 20px rgba(57, 255, 20, 0.2);
+}
+
+.neon-border-purple {
+    border: 2px solid rgba(188, 19, 254, 0.3);
+    box-shadow: 0 0 20px rgba(188, 19, 254, 0.2);
+}
+
+.neon-border-blue {
+    border: 2px solid rgba(77, 77, 255, 0.3);
+    box-shadow: 0 0 20px rgba(77, 77, 255, 0.2);
+}
+
+/* Hover Effects */
+.game-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    background: var(--card-hover);
+}
+
+.neon-border-pink:hover {
+    box-shadow: 0 0 40px rgba(255, 16, 240, 0.5), 0 20px 40px rgba(0, 0, 0, 0.3);
+    border-color: var(--neon-pink);
+}
+
+.neon-border-cyan:hover {
+    box-shadow: 0 0 40px rgba(0, 245, 255, 0.5), 0 20px 40px rgba(0, 0, 0, 0.3);
+    border-color: var(--neon-cyan);
+}
+
+.neon-border-yellow:hover {
+    box-shadow: 0 0 40px rgba(255, 255, 0, 0.5), 0 20px 40px rgba(0, 0, 0, 0.3);
+    border-color: var(--neon-yellow);
+}
+
+.neon-border-green:hover {
+    box-shadow: 0 0 40px rgba(57, 255, 20, 0.5), 0 20px 40px rgba(0, 0, 0, 0.3);
+    border-color: var(--neon-green);
+}
+
+.neon-border-purple:hover {
+    box-shadow: 0 0 40px rgba(188, 19, 254, 0.5), 0 20px 40px rgba(0, 0, 0, 0.3);
+    border-color: var(--neon-purple);
+}
+
+.neon-border-blue:hover {
+    box-shadow: 0 0 40px rgba(77, 77, 255, 0.5), 0 20px 40px rgba(0, 0, 0, 0.3);
+    border-color: var(--neon-blue);
+}
+
+/* ============================================
+   GAME IMAGE
+   ============================================ */
+
+.game-image {
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.game-card.small .game-image {
+    height: 140px;
+}
+
+.game-card.large .game-image {
+    height: 260px;
+}
+
+.game-icon {
+    font-size: 4rem;
+    transition: transform 0.4s ease;
+}
+
+.game-card:hover .game-icon {
+    transform: scale(1.2) rotate(5deg);
+}
+
+.featured-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    color: var(--neon-yellow);
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border: 1px solid var(--neon-yellow);
+    text-shadow: 0 0 10px var(--neon-yellow);
+    animation: badgePulse 2s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* ============================================
+   GAME INFO
+   ============================================ */
+
+.game-info {
+    padding: 1.25rem;
+}
+
+.game-info h3 {
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-white);
+    font-weight: 700;
+}
+
+.game-info p {
+    color: var(--text-gray);
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+}
+
+.game-card.small .game-info {
+    padding: 1rem;
+}
+
+.game-card.small .game-info h3 {
+    font-size: 1.1rem;
+}
+
+.game-card.small .game-info p {
+    display: none;
+}
+
+/* ============================================
+   TAGS
+   ============================================ */
+
+.game-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.tag {
+    padding: 0.3rem 0.7rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tag-pink {
+    background: rgba(255, 16, 240, 0.2);
+    color: var(--neon-pink);
+    border: 1px solid rgba(255, 16, 240, 0.3);
+}
+
+.tag-cyan {
+    background: rgba(0, 245, 255, 0.2);
+    color: var(--neon-cyan);
+    border: 1px solid rgba(0, 245, 255, 0.3);
+}
+
+.tag-yellow {
+    background: rgba(255, 255, 0, 0.2);
+    color: var(--neon-yellow);
+    border: 1px solid rgba(255, 255, 0, 0.3);
+}
+
+.tag-green {
+    background: rgba(57, 255, 20, 0.2);
+    color: var(--neon-green);
+    border: 1px solid rgba(57, 255, 20, 0.3);
+}
+
+.tag-purple {
+    background: rgba(188, 19, 254, 0.2);
+    color: var(--neon-purple);
+    border: 1px solid rgba(188, 19, 254, 0.3);
+}
+
+.tag-blue {
+    background: rgba(77, 77, 255, 0.2);
+    color: var(--neon-blue);
+    border: 1px solid rgba(77, 77, 255, 0.3);
+}
+
+/* ============================================
+   PLAY BUTTONS
+   ============================================ */
+
+.play-btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    text-align: center;
+    border: 2px solid;
+}
+
+.game-card.small .play-btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
+}
+
+.neon-btn-pink {
+    background: rgba(255, 16, 240, 0.2);
+    color: var(--neon-pink);
+    border-color: var(--neon-pink);
+    box-shadow: 0 0 10px rgba(255, 16, 240, 0.3);
+}
+
+.neon-btn-pink:hover {
+    background: var(--neon-pink);
+    color: var(--bg-dark);
+    box-shadow: 0 0 30px rgba(255, 16, 240, 0.8);
+    transform: translateY(-2px);
+}
+
+.neon-btn-cyan {
+    background: rgba(0, 245, 255, 0.2);
+    color: var(--neon-cyan);
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 10px rgba(0, 245, 255, 0.3);
+}
+
+.neon-btn-cyan:hover {
+    background: var(--neon-cyan);
+    color: var(--bg-dark);
+    box-shadow: 0 0 30px rgba(0, 245, 255, 0.8);
+    transform: translateY(-2px);
+}
+
+.neon-btn-yellow {
+    background: rgba(255, 255, 0, 0.2);
+    color: var(--neon-yellow);
+    border-color: var(--neon-yellow);
+    box-shadow: 0 0 10px rgba(255, 255, 0, 0.3);
+}
+
+.neon-btn-yellow:hover {
+    background: var(--neon-yellow);
+    color: var(--bg-dark);
+    box-shadow: 0 0 30px rgba(255, 255, 0, 0.8);
+    transform: translateY(-2px);
+}
+
+.neon-btn-green {
+    background: rgba(57, 255, 20, 0.2);
+    color: var(--neon-green);
+    border-color: var(--neon-green);
+    box-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
+}
+
+.neon-btn-green:hover {
+    background: var(--neon-green);
+    color: var(--bg-dark);
+    box-shadow: 0 0 30px rgba(57, 255, 20, 0.8);
+    transform: translateY(-2px);
+}
+
+.neon-btn-purple {
+    background: rgba(188, 19, 254, 0.2);
+    color: var(--neon-purple);
+    border-color: var(--neon-purple);
+    box-shadow: 0 0 10px rgba(188, 19, 254, 0.3);
+}
+
+.neon-btn-purple:hover {
+    background: var(--neon-purple);
+    color: var(--bg-dark);
+    box-shadow: 0 0 30px rgba(188, 19, 254, 0.8);
+    transform: translateY(-2px);
+}
+
+.neon-btn-blue {
+    background: rgba(77, 77, 255, 0.2);
+    color: var(--neon-blue);
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 10px rgba(77, 77, 255, 0.3);
+}
+
+.neon-btn-blue:hover {
+    background: var(--neon-blue);
+    color: var(--bg-dark);
+    box-shadow: 0 0 30px rgba(77, 77, 255, 0.8);
+    transform: translateY(-2px);
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+
+footer {
+    background: rgba(5, 8, 16, 0.95);
+    border-top: 2px solid rgba(0, 245, 255, 0.3);
+    padding: 2rem 0;
+    margin-top: 4rem;
+    text-align: center;
+}
+
+.footer-content {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+footer p {
+    color: var(--text-gray);
+    margin-bottom: 0.5rem;
+}
+
+.footer-credits {
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 968px) {
+    .hero-title {
+        font-size: 3rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    nav {
+        gap: 1rem;
+    }
+    
+    .nav-link {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.8rem;
+    }
+}
+
+@media (max-width: 768px) {
+    header .container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    nav {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .masonry-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+    
+    .game-card.large {
+        grid-row-end: span 20;
+    }
+}
+
+@media (max-width: 480px) {
+    .masonry-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .game-card.small,
+    .game-card.medium,
+    .game-card.large {
+        grid-row-end: span auto;
+    }
+    
+    .hero-title {
+        font-size: 2rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+}
