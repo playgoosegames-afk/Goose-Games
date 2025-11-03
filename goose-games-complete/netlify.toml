@@ -1,0 +1,92 @@
+# Netlify Configuration File
+# Security headers, redirects, and form settings
+
+# Security Headers for all pages
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Prevent clickjacking
+    X-Frame-Options = "DENY"
+    
+    # Prevent MIME type sniffing
+    X-Content-Type-Options = "nosniff"
+    
+    # Enable XSS protection
+    X-XSS-Protection = "1; mode=block"
+    
+    # Referrer policy
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    
+    # Permissions policy (disable unnecessary browser features)
+    Permissions-Policy = "geolocation=(), microphone=(), camera=(), payment=()"
+    
+    # Content Security Policy (adjust as needed for your embeds)
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://scratch.mit.edu; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; frame-src https://scratch.mit.edu; connect-src 'self' https://www.google-analytics.com"
+    
+    # Strict Transport Security (force HTTPS)
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+
+# Cache static assets
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.jpg"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.gif"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Redirect www to non-www (or vice versa)
+[[redirects]]
+  from = "https://www.playgoosegames.io/*"
+  to = "https://playgoosegames.io/:splat"
+  status = 301
+  force = true
+
+# Redirect old URLs if you have any (example)
+# [[redirects]]
+#   from = "/old-page"
+#   to = "/new-page"
+#   status = 301
+
+# Form settings (for contact and developer submission forms)
+[build]
+  publish = "."
+
+# Enable Netlify Forms spam protection
+[build.processing]
+  skip_processing = false
+
+[build.processing.css]
+  bundle = false
+  minify = false
+
+[build.processing.js]
+  bundle = false
+  minify = false
+
+[build.processing.html]
+  pretty_urls = true
+
+[build.processing.images]
+  compress = true
+
+# Environment variables (add your actual values in Netlify dashboard)
+# [build.environment]
+#   GOOGLE_ANALYTICS_ID = "G-XXXXXXXXXX"
