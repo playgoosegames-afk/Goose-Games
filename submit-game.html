@@ -161,7 +161,7 @@
             <div class="form-section">
                 <h2>📝 SUBMISSION FORM</h2>
                 
-                <form name="game-submission" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+                <form name="game-submission" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/submit-success.html">
                     <input type="hidden" name="form-name" value="game-submission">
                     <p style="display: none;">
                         <label>Don't fill this: <input name="bot-field" /></label>
@@ -198,7 +198,8 @@
 
                     <div class="form-group">
                         <label>Game URL *</label>
-                        <input type="url" name="game-url" required placeholder="https://scratch.mit.edu/projects/123456">
+                        <input type="text" name="game-url" required placeholder="https://scratch.mit.edu/projects/123456" pattern="https?://.*" title="Please enter a valid URL starting with http:// or https://">
+                        <p style="color: var(--text-gray); font-size: 0.85rem; margin-top: 0.5rem;">Enter the full URL (must start with https://)</p>
                     </div>
 
                     <div class="form-group">
