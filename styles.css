@@ -600,17 +600,17 @@ nav {
 .game-card:nth-child(9) { animation-delay: 0.9s; }
 .game-card:nth-child(10) { animation-delay: 1s; }
 
-/* Card Sizes */
+/* Card Sizes - Smaller & More Compact */
 .game-card.small {
-    grid-row-end: span 14;
+    grid-row-end: span 10;
 }
 
 .game-card.medium {
-    grid-row-end: span 18;
+    grid-row-end: span 13;
 }
 
 .game-card.large {
-    grid-row-end: span 22;
+    grid-row-end: span 16;
 }
 
 /* Neon Borders */
@@ -680,27 +680,47 @@ nav {
     border-color: var(--neon-blue);
 }
 
-/* Game Image */
+/* Game Image - Smaller & More Compact */
 .game-image {
-    height: 200px;
+    height: 150px;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     overflow: hidden;
+    background-size: cover !important;
+    background-position: center !important;
+}
+
+/* Overlay for readability when using images */
+.game-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 0;
+}
+
+.game-image > * {
+    position: relative;
+    z-index: 1;
 }
 
 .game-card.small .game-image {
-    height: 140px;
+    height: 120px;
 }
 
 .game-card.large .game-image {
-    height: 260px;
+    height: 180px;
 }
 
 .game-icon {
-    font-size: 4rem;
+    font-size: 3rem;
     transition: transform 0.4s ease;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
 }
 
 .game-card:hover .game-icon {
@@ -728,31 +748,31 @@ nav {
     50% { transform: scale(1.05); }
 }
 
-/* Game Info */
+/* Game Info - More Compact */
 .game-info {
-    padding: 1.25rem;
+    padding: 1rem;
 }
 
 .game-info h3 {
-    font-size: 1.4rem;
-    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+    margin-bottom: 0.4rem;
     color: var(--text-white);
     font-weight: 700;
 }
 
 .game-info p {
     color: var(--text-gray);
-    font-size: 0.95rem;
-    margin-bottom: 0.75rem;
-    line-height: 1.5;
+    font-size: 0.85rem;
+    margin-bottom: 0.6rem;
+    line-height: 1.4;
 }
 
 .game-card.small .game-info {
-    padding: 1rem;
+    padding: 0.8rem;
 }
 
 .game-card.small .game-info h3 {
-    font-size: 1.1rem;
+    font-size: 1rem;
 }
 
 .game-card.small .game-info p {
