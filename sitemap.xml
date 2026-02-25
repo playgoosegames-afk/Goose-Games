@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://playgoosegames.io/</loc><priority>1.0</priority></url>
+  <url><loc>https://playgoosegames.io/about.html</loc><priority>0.5</priority></url>
+  <url><loc>https://playgoosegames.io/contact.html</loc><priority>0.5</priority></url>
+  <url><loc>https://playgoosegames.io/submit-game.html</loc><priority>0.5</priority></url>
+  <url><loc>https://playgoosegames.io/games/nitro-racing.html</loc><priority>0.8</priority></url>
+  <url><loc>https://playgoosegames.io/games/mini-golf.html</loc><priority>0.8</priority></url>
+  <url><loc>https://playgoosegames.io/games/blockhead.html</loc><priority>0.8</priority></url>
+  <url><loc>https://playgoosegames.io/games/pixel-art.html</loc><priority>0.8</priority></url>
+  <url><loc>https://playgoosegames.io/games/minecraft-clone.html</loc><priority>0.8</priority></url>
+  <url><loc>https://playgoosegames.io/games/laser-connect.html</loc><priority>0.7</priority></url>
+  <url><loc>https://playgoosegames.io/games/longcat.html</loc><priority>0.7</priority></url>
+  <url><loc>https://playgoosegames.io/games/hill-climb.html</loc><priority>0.7</priority></url>
+  <url><loc>https://playgoosegames.io/games/f1-speedway.html</loc><priority>0.7</priority></url>
+  <url><loc>https://playgoosegames.io/games/penalty-shots.html</loc><priority>0.7</priority></url>
+</urlset>

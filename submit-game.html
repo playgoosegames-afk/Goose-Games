@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Submit a Game - Goose Games</title>
+  <meta name="description" content="Submit your game to be featured on Goose Games!">
+  <link rel="stylesheet" href="styles.css">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-C5Q5ZQ2DBZ"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-C5Q5ZQ2DBZ');</script>
+</head>
+<body>
+<header>
+  <a href="/" class="logo">🦆 Goose Games</a>
+  <nav>
+    <a href="/">Games</a>
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="submit-game.html">Submit a Game</a>
+  </nav>
+</header>
+<main>
+  <div class="static-page">
+    <h1>Submit a Game 🎮</h1>
+    <p class="subtitle">Created an awesome game? We'd love to feature it on Goose Games!</p>
+
+    <h2>What We're Looking For</h2>
+    <p>We feature browser-playable games that are kid-friendly (ages 6–16), fun and engaging, and either free to play or licensed for embedding. Scratch games and Itch.io games are welcome!</p>
+
+    <form name="submit-game" method="POST" data-netlify="true" action="submit-success.html" style="margin-top:28px">
+      <input type="hidden" name="form-name" value="submit-game">
+      <div class="form-group">
+        <label for="game-title">Game Title</label>
+        <input type="text" id="game-title" name="game-title" required placeholder="My Awesome Game">
+      </div>
+      <div class="form-group">
+        <label for="game-url">Game URL (Scratch, Itch.io, or direct link)</label>
+        <input type="url" id="game-url" name="game-url" required placeholder="https://scratch.mit.edu/projects/...">
+      </div>
+      <div class="form-group">
+        <label for="game-category">Category</label>
+        <select id="game-category" name="game-category">
+          <option>Puzzle</option>
+          <option>Racing</option>
+          <option>Sports</option>
+          <option>Creative</option>
+          <option>Arcade</option>
+          <option>Strategy</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="your-email">Your Email (for follow-up)</label>
+        <input type="email" id="your-email" name="your-email" required placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label for="game-desc">Brief Description</label>
+        <textarea id="game-desc" name="game-desc" placeholder="Tell us about your game in a few sentences..."></textarea>
+      </div>
+      <button type="submit" class="btn-primary">Submit Game 🚀</button>
+    </form>
+  </div>
+</main>
+<footer>
+  <div class="footer-links">
+    <a href="about.html">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="submit-game.html">Submit a Game</a>
+    <a href="privacy-policy.html">Privacy Policy</a>
+    <a href="terms-of-service.html">Terms of Service</a>
+  </div>
+  <p>© 2025 Goose Games · <a href="https://playgoosegames.io">playgoosegames.io</a></p>
+</footer>
+</body>
+</html>
