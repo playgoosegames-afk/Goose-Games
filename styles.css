@@ -339,6 +339,22 @@ nav a:hover { color: var(--text); background: var(--surface-2); }
   max-width: 100%;
 }
 
+/* Responsive 16:9 embed (iDev.Games etc.) */
+.game-frame-wrap.responsive {
+  display: block;
+  position: relative;
+  height: 0;
+  padding-bottom: 56.25%;
+}
+
+.game-frame-wrap.responsive iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
 .game-info {
   background: var(--surface);
   border: 1px solid var(--border);
