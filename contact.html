@@ -11,7 +11,10 @@
 </head>
 <body>
 <header>
-  <a href="/" class="logo">🦆 Goose Games</a>
+  <a href="/" class="logo">
+    <span class="logo-icon">G</span>
+    Goose Games
+  </a>
   <nav>
     <a href="/">Games</a>
     <a href="about.html">About</a>
@@ -21,18 +24,18 @@
 </header>
 <main>
   <div class="static-page">
-    <h1>Contact Us 🦆</h1>
-    <p class="subtitle">Got a question? We'd love to hear from you!</p>
+    <h1>Contact Us</h1>
+    <p class="subtitle">Got a question or feedback? We'd love to hear from you.</p>
 
     <form name="contact" method="POST" data-netlify="true" action="contact-success.html">
       <input type="hidden" name="form-name" value="contact">
       <div class="form-group">
         <label for="name">Your Name</label>
-        <input type="text" id="name" name="name" required placeholder="Gus the Goose">
+        <input type="text" id="name" name="name" required placeholder="Your name">
       </div>
       <div class="form-group">
         <label for="email">Email Address</label>
-        <input type="email" id="email" name="email" required placeholder="gus@example.com">
+        <input type="email" id="email" name="email" required placeholder="you@example.com">
       </div>
       <div class="form-group">
         <label for="subject">Subject</label>
@@ -48,7 +51,7 @@
         <label for="message">Message</label>
         <textarea id="message" name="message" required placeholder="Tell us what's on your mind..."></textarea>
       </div>
-      <button type="submit" class="btn-primary">Send Message 🦆</button>
+      <button type="submit" class="btn-primary">Send Message</button>
     </form>
   </div>
 </main>

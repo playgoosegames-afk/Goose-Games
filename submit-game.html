@@ -4,14 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Submit a Game - Goose Games</title>
-  <meta name="description" content="Submit your game to be featured on Goose Games!">
+  <meta name="description" content="Submit your game to be featured on Goose Games.">
   <link rel="stylesheet" href="styles.css">
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-C5Q5ZQ2DBZ"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-C5Q5ZQ2DBZ');</script>
 </head>
 <body>
 <header>
-  <a href="/" class="logo">🦆 Goose Games</a>
+  <a href="/" class="logo">
+    <span class="logo-icon">G</span>
+    Goose Games
+  </a>
   <nav>
     <a href="/">Games</a>
     <a href="about.html">About</a>
@@ -21,11 +24,11 @@
 </header>
 <main>
   <div class="static-page">
-    <h1>Submit a Game 🎮</h1>
-    <p class="subtitle">Created an awesome game? We'd love to feature it on Goose Games!</p>
+    <h1>Submit a Game</h1>
+    <p class="subtitle">Built something great? We'd love to feature it on Goose Games.</p>
 
     <h2>What We're Looking For</h2>
-    <p>We feature browser-playable games that are kid-friendly (ages 6–16), fun and engaging, and either free to play or licensed for embedding. Scratch games and Itch.io games are welcome!</p>
+    <p>We feature browser-playable games that are fun, engaging, and free to play or licensed for embedding. Scratch games and Itch.io games are welcome.</p>
 
     <form name="submit-game" method="POST" data-netlify="true" action="submit-success.html" style="margin-top:28px">
       <input type="hidden" name="form-name" value="submit-game">
@@ -57,7 +60,7 @@
         <label for="game-desc">Brief Description</label>
         <textarea id="game-desc" name="game-desc" placeholder="Tell us about your game in a few sentences..."></textarea>
       </div>
-      <button type="submit" class="btn-primary">Submit Game 🚀</button>
+      <button type="submit" class="btn-primary">Submit Game</button>
     </form>
   </div>
 </main>
