@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Goose Breaker — HONK ATTACK</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Boogaloo&family=Poppins:wght@400;700;900&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: #1a237e;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh;
+    font-family: 'Poppins', sans-serif;
+    background-image:
+      radial-gradient(circle at 15% 85%, #283593 0%, transparent 40%),
+      radial-gradient(circle at 85% 15%, #311b92 0%, transparent 40%);
+  }
+  #wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  h1 { font-family: 'Boogaloo', cursive; font-size: 38px; color: #fff; letter-spacing: 3px;
+    text-shadow: 0 0 20px rgba(255,235,59,0.5); }
+  .sub { font-size: 11px; color: rgba(255,235,59,0.6); letter-spacing: 3px; text-transform: uppercase; }
+  #hud { display: flex; gap: 24px; }
+  .hud-item { text-align: center; color: #fff; }
+  .hud-label { font-size: 10px; letter-spacing: 2px; color: rgba(255,255,255,0.5); }
+  .hud-val { font-family: 'Boogaloo', cursive; font-size: 30px; color: #ffeb3b; }
+  #game-wrap { position: relative; }
+  canvas { display: block; border-radius: 8px;
+    box-shadow: 0 0 40px rgba(255,235,59,0.15), 0 0 0 2px rgba(255,235,59,0.2); }
+  #overlay {
+    position: absolute; inset: 0; border-radius: 8px;
+    background: rgba(26,35,126,0.93);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 6px;
+  }
+  #overlay.hidden { display: none; }
+  .ov-goose { font-size: 72px; animation: float 2s ease-in-out infinite; }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+  .ov-title { font-family:'Boogaloo',cursive; font-size:42px; color:#ffeb3b;
+    text-shadow: 0 0 20px rgba(255,235,59,0.5); }
+  .ov-sub { font-size:11px; color:rgba(255,255,255,0.5); letter-spacing:2px; margin-bottom:8px; }
+  .ov-score { font-family:'Boogaloo',cursive; font-size:72px; color:#ff4081; display:none; }
+  .ov-msg { font-size:13px; color:rgba(255,255,255,0.6); letter-spacing:1px; display:none; margin-bottom:12px; }
+  .start-btn {
+    background: #ffeb3b; color: #1a237e;
+    font-family: 'Boogaloo', cursive; font-size: 22px;
+    padding: 12px 40px; border-radius: 999px;
+    border: none; cursor: pointer;
+    box-shadow: 0 5px 0 #f9a825;
+    letter-spacing: 2px;
+    transition: transform 0.1s;
+  }
+  .start-btn:hover { transform: translateY(-2px); }
+  #lives { font-size: 22px; letter-spacing: 4px; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <h1>🪿 GOOSE BREAKER</h1>
+  <p class="sub">Destroy the bread. Protect the pond.</p>
+  <div id="hud">
+    <div class="hud-item"><div class="hud-label">Score</div><div class="hud-val" id="score">0</div></div>
+    <div class="hud-item"><div class="hud-label">Level</div><div class="hud-val" id="level">1</div></div>
+    <div class="hud-item"><div class="hud-label">Lives</div><div id="lives">🪿🪿🪿</div></div>
+    <div class="hud-item"><div class="hud-label">Best</div><div class="hud-val" id="best">0</div></div>
+  </div>
+  <div id="game-wrap">
+    <canvas id="c" width="420" height="520"></canvas>
+    <div id="overlay">
+      <div class="ov-goose">🪿</div>
+      <div class="ov-title">GOOSE BREAKER</div>
+      <div class="ov-sub">Mouse / touch to move paddle</div>
+      <div class="ov-score" id="ov-score"></div>
+      <div class="ov-msg" id="ov-msg"></div>
+      <button class="start-btn" onclick="startGame()">LAUNCH HONK</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
+const overlay = document.getElementById('overlay');
+const scoreEl = document.getElementById('score');
+const levelEl = document.getElementById('level');
+const livesEl = document.getElementById('lives');
+const bestEl = document.getElementById('best');
+const ovScore = document.getElementById('ov-score');
+const ovMsg = document.getElementById('ov-msg');
+
+let paddle, ball, bricks, score, lives, level, best, state, animId;
+best = parseInt(localStorage.getItem('goose_breaker_best') || 0);
+bestEl.textContent = best;
+
+const BRICK_COLS = 7, BRICK_ROWS = 5;
+const BRICK_W = 52, BRICK_H = 20, BRICK_PAD = 6;
+const BRICK_OFF_X = 14, BRICK_OFF_Y = 50;
+
+const BRICK_COLORS = [
+  '#f44336','#ff7043','#ff9800','#ffc107','#8bc34a','#26c6da','#7c4dff'
+];
+const BRICK_EMOJIS = ['🍞','🌊','🥚','🦆','🌿','💧','🪿'];
+
+function makeBricks() {
+  bricks = [];
+  for (let r = 0; r < BRICK_ROWS; r++) {
+    for (let c = 0; c < BRICK_COLS; c++) {
+      bricks.push({
+        x: BRICK_OFF_X + c * (BRICK_W + BRICK_PAD),
+        y: BRICK_OFF_Y + r * (BRICK_H + BRICK_PAD),
+        alive: true,
+        color: BRICK_COLORS[r % BRICK_COLORS.length],
+        emoji: BRICK_EMOJIS[r % BRICK_EMOJIS.length],
+        hits: r < 2 ? 2 : 1,
+        w: BRICK_W, h: BRICK_H
+      });
+    }
+  }
+}
+
+function startGame() {
+  score = 0; lives = 3; level = 1;
+  scoreEl.textContent = 0; levelEl.textContent = 1;
+  updateLives();
+  paddle = { x: W/2 - 40, y: H - 30, w: 80, h: 12 };
+  ball = { x: W/2, y: H - 50, vx: 3 + level * 0.3, vy: -(3.5 + level * 0.3), r: 9 };
+  makeBricks();
+  state = 'playing';
+  overlay.classList.add('hidden');
+  if (animId) cancelAnimationFrame(animId);
+  loop();
+}
+
+function nextLevel() {
+  level++;
+  levelEl.textContent = level;
+  ball.x = W/2; ball.y = H - 50;
+  ball.vx = (3 + level * 0.4) * Math.sign(ball.vx || 1);
+  ball.vy = -(3.5 + level * 0.4);
+  makeBricks();
+}
+
+function updateLives() {
+  livesEl.textContent = '🪿'.repeat(Math.max(0, lives));
+}
+
+function loop() {
+  animId = requestAnimationFrame(loop);
+  update();
+  draw();
+}
+
+function update() {
+  if (state !== 'playing') return;
+
+  ball.x += ball.vx;
+  ball.y += ball.vy;
+
+  // wall bounce
+  if (ball.x - ball.r < 0) { ball.x = ball.r; ball.vx = Math.abs(ball.vx); }
+  if (ball.x + ball.r > W) { ball.x = W - ball.r; ball.vx = -Math.abs(ball.vx); }
+  if (ball.y - ball.r < 0) { ball.y = ball.r; ball.vy = Math.abs(ball.vy); }
+
+  // paddle
+  if (ball.y + ball.r >= paddle.y && ball.y + ball.r <= paddle.y + paddle.h &&
+      ball.x >= paddle.x && ball.x <= paddle.x + paddle.w) {
+    const rel = (ball.x - (paddle.x + paddle.w/2)) / (paddle.w/2);
+    const angle = rel * 1.1;
+    const speed = Math.sqrt(ball.vx**2 + ball.vy**2);
+    ball.vx = Math.sin(angle) * speed;
+    ball.vy = -Math.abs(Math.cos(angle) * speed);
+    ball.y = paddle.y - ball.r;
+  }
+
+  // lost
+  if (ball.y > H + 20) {
+    lives--;
+    updateLives();
+    if (lives <= 0) { gameOver(); return; }
+    ball.x = W/2; ball.y = H - 50;
+    ball.vx = 3 + level * 0.3;
+    ball.vy = -(3.5 + level * 0.3);
+  }
+
+  // bricks
+  let allDead = true;
+  bricks.forEach(b => {
+    if (!b.alive) return;
+    allDead = false;
+    if (ball.x + ball.r > b.x && ball.x - ball.r < b.x + b.w &&
+        ball.y + ball.r > b.y && ball.y - ball.r < b.y + b.h) {
+      b.hits--;
+      if (b.hits <= 0) { b.alive = false; score += 10 * level; scoreEl.textContent = score; }
+      // bounce direction
+      const cx = b.x + b.w/2, cy = b.y + b.h/2;
+      const dx = ball.x - cx, dy = ball.y - cy;
+      if (Math.abs(dx/b.w) > Math.abs(dy/b.h)) ball.vx *= -1;
+      else ball.vy *= -1;
+    }
+  });
+
+  if (allDead) nextLevel();
+}
+
+function draw() {
+  // bg
+  const bg = ctx.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0, '#1a237e');
+  bg.addColorStop(1, '#283593');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  // pond at bottom
+  ctx.fillStyle = 'rgba(38,198,218,0.08)';
+  ctx.fillRect(0, H - 80, W, 80);
+
+  // bricks
+  bricks.forEach(b => {
+    if (!b.alive) return;
+    const alpha = b.hits === 2 ? 1 : 0.65;
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = b.color;
+    ctx.beginPath();
+    ctx.roundRect(b.x, b.y, b.w, b.h, 4);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    ctx.fillRect(b.x + 2, b.y + 2, b.w - 4, 4);
+    ctx.globalAlpha = 1;
+    ctx.font = '11px serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(b.emoji, b.x + b.w/2, b.y + b.h - 4);
+  });
+
+  // paddle — goose paddle
+  const pg = ctx.createLinearGradient(paddle.x, 0, paddle.x + paddle.w, 0);
+  pg.addColorStop(0, '#fff176');
+  pg.addColorStop(0.5, '#ffee58');
+  pg.addColorStop(1, '#fff176');
+  ctx.fillStyle = pg;
+  ctx.beginPath();
+  ctx.roundRect(paddle.x, paddle.y, paddle.w, paddle.h, 6);
+  ctx.fill();
+  ctx.fillStyle = '#f9a825';
+  ctx.beginPath();
+  ctx.roundRect(paddle.x + 2, paddle.y + 2, paddle.w - 4, 3, 2);
+  ctx.fill();
+  // goose on paddle
+  ctx.font = '14px serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('🪿', paddle.x + paddle.w/2, paddle.y + 1);
+
+  // ball — goose egg
+  const ballG = ctx.createRadialGradient(ball.x - 2, ball.y - 2, 1, ball.x, ball.y, ball.r);
+  ballG.addColorStop(0, '#fff9c4');
+  ballG.addColorStop(1, '#f9a825');
+  ctx.fillStyle = ballG;
+  ctx.beginPath();
+  ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = '#f57f17';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // particles / sparks at ball
+  ctx.fillStyle = 'rgba(255,235,59,0.3)';
+  ctx.beginPath();
+  ctx.arc(ball.x, ball.y, ball.r + 4, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function gameOver() {
+  state = 'dead';
+  if (score > best) { best = score; localStorage.setItem('goose_breaker_best', best); bestEl.textContent = best; }
+  ovScore.style.display = 'block'; ovMsg.style.display = 'block';
+  ovScore.textContent = score;
+  ovMsg.textContent = 'GAME OVER — THE GEESE ARE ANGRY';
+  overlay.classList.remove('hidden');
+}
+
+// mouse
+canvas.addEventListener('mousemove', e => {
+  const rect = canvas.getBoundingClientRect();
+  const x = (e.clientX - rect.left) * (W / rect.width);
+  paddle.x = Math.max(0, Math.min(W - paddle.w, x - paddle.w / 2));
+});
+
+// touch
+canvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  const x = (e.touches[0].clientX - rect.left) * (W / rect.width);
+  paddle.x = Math.max(0, Math.min(W - paddle.w, x - paddle.w / 2));
+}, { passive: false });
+
+// init draw
+(function initDraw() {
+  const bg = document.getElementById('c').getContext('2d');
+  bg.fillStyle = '#1a237e';
+  bg.fillRect(0, 0, W, H);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HONK-TRIS</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bungee&family=Bungee+Shade&family=Nunito:wght@700;900&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#0d1117;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:'Nunito',sans-serif;
+    background-image:radial-gradient(circle at 10% 20%,#1a2744 0%,transparent 50%),radial-gradient(circle at 90% 80%,#1a1a2e 0%,transparent 50%)}
+  #app{display:flex;gap:20px;align-items:flex-start}
+  #sidebar{width:130px;display:flex;flex-direction:column;gap:14px}
+  .panel{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:12px;text-align:center}
+  .panel-label{font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
+  .panel-val{font-family:'Bungee',cursive;font-size:26px;color:#ffeb3b}
+  .next-label{font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+  #next-canvas{display:block;margin:0 auto}
+  h1{font-family:'Bungee Shade',cursive;font-size:22px;color:#ffeb3b;letter-spacing:1px;text-align:center;text-shadow:0 0 20px rgba(255,235,59,0.4)}
+  h1 small{display:block;font-family:'Nunito',sans-serif;font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:2px;font-weight:700;margin-top:2px}
+  #game-wrap{position:relative}
+  canvas#c{display:block;border-radius:6px;border:2px solid rgba(255,235,59,0.15);box-shadow:0 0 40px rgba(255,235,59,0.08)}
+  #overlay{position:absolute;inset:0;background:rgba(13,17,23,0.93);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+  #overlay.hidden{display:none}
+  .ov-goose{font-size:64px;animation:honkbob 1s ease-in-out infinite alternate}
+  @keyframes honkbob{from{transform:rotate(-10deg) scale(0.95)}to{transform:rotate(10deg) scale(1.05)}}
+  .ov-title{font-family:'Bungee Shade',cursive;font-size:36px;color:#ffeb3b;text-shadow:0 0 20px rgba(255,235,59,0.5)}
+  .ov-sub{font-size:11px;color:rgba(255,255,255,0.35);letter-spacing:2px;margin-bottom:4px}
+  .ov-score{font-family:'Bungee',cursive;font-size:56px;color:#ff5252;display:none}
+  .ov-msg{font-size:11px;color:rgba(255,82,82,0.7);letter-spacing:2px;display:none;margin-bottom:8px}
+  .btn{background:#ffeb3b;color:#0d1117;font-family:'Bungee',cursive;font-size:16px;padding:12px 32px;border-radius:6px;border:none;cursor:pointer;letter-spacing:1px;box-shadow:0 4px 0 #f9a825;transition:transform .1s}
+  .btn:hover{transform:translateY(-2px)}
+  #dpad{display:grid;grid-template-columns:44px 44px 44px;gap:4px;margin-top:8px}
+  .db{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;height:44px;transition:background .1s;user-select:none}
+  .db:active{background:rgba(255,235,59,0.2)}
+  #db-up{grid-column:2}
+  #db-rot{grid-column:2;grid-row:1;font-size:14px}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="sidebar">
+    <h1>HONK<br>TRIS<small>stack the geese</small></h1>
+    <div class="panel"><div class="panel-label">Score</div><div class="panel-val" id="score">0</div></div>
+    <div class="panel"><div class="panel-label">Lines</div><div class="panel-val" id="lines">0</div></div>
+    <div class="panel"><div class="panel-label">Level</div><div class="panel-val" id="level">1</div></div>
+    <div class="panel"><div class="panel-label">Best</div><div class="panel-val" id="best">0</div></div>
+    <div class="panel">
+      <div class="next-label">Next</div>
+      <canvas id="next-canvas" width="80" height="80"></canvas>
+    </div>
+    <div id="dpad">
+      <div class="db" onclick="act('rotl')">↺</div>
+      <div class="db" id="db-rot" onclick="act('rot')">↻</div>
+      <div class="db" onclick="act('rotr')">↻</div>
+      <div class="db" onclick="act('left')">◀</div>
+      <div class="db" onclick="act('down')">▼</div>
+      <div class="db" onclick="act('right')">▶</div>
+      <div class="db" style="grid-column:1/4;font-size:12px;letter-spacing:1px" onclick="act('drop')">DROP 🪿</div>
+    </div>
+  </div>
+  <div id="game-wrap">
+    <canvas id="c" width="200" height="400"></canvas>
+    <div id="overlay">
+      <div class="ov-goose">🪿</div>
+      <div class="ov-title">HONK-TRIS</div>
+      <div class="ov-sub">← → to move · ↑ to rotate · ↓ to drop</div>
+      <div class="ov-score" id="ov-score"></div>
+      <div class="ov-msg" id="ov-msg"></div>
+      <button class="btn" onclick="startGame()">START STACKING</button>
+    </div>
+  </div>
+</div>
+<script>
+const C=document.getElementById('c'),ctx=C.getContext('2d');
+const NC=document.getElementById('next-canvas'),nctx=NC.getContext('2d');
+const W=10,H=20,SZ=20;
+const overlay=document.getElementById('overlay');
+const scoreEl=document.getElementById('score'),linesEl=document.getElementById('lines'),levelEl=document.getElementById('level'),bestEl=document.getElementById('best');
+const ovScore=document.getElementById('ov-score'),ovMsg=document.getElementById('ov-msg');
+
+let best=parseInt(localStorage.getItem('honktris_best')||0);
+bestEl.textContent=best;
+
+const PIECES=[
+  {shape:[[1,1,1,1]],color:'#26c6da',emoji:'🪿'},
+  {shape:[[1,1],[1,1]],color:'#ffeb3b',emoji:'🥚'},
+  {shape:[[0,1,0],[1,1,1]],color:'#ff7043',emoji:'🦆'},
+  {shape:[[1,0,0],[1,1,1]],color:'#66bb6a',emoji:'🍞'},
+  {shape:[[0,0,1],[1,1,1]],color:'#7c4dff',emoji:'🌊'},
+  {shape:[[0,1,1],[1,1,0]],color:'#ff4081',emoji:'🐣'},
+  {shape:[[1,1,0],[0,1,1]],color:'#29b6f6',emoji:'💧'},
+];
+
+let board,cur,next,score,lines,level,dropTimer,gameLoop,state;
+
+function newPiece(){
+  const p=next||PIECES[Math.floor(Math.random()*PIECES.length)];
+  next=PIECES[Math.floor(Math.random()*PIECES.length)];
+  return{shape:p.shape.map(r=>[...r]),color:p.color,emoji:p.emoji,x:Math.floor(W/2)-Math.floor(p.shape[0].length/2),y:0};
+}
+
+function rotate(shape){
+  return shape[0].map((_,c)=>shape.map(r=>r[c]).reverse());
+}
+
+function valid(shape,ox,oy){
+  for(let r=0;r<shape.length;r++)for(let c=0;c<shape[r].length;c++){
+    if(!shape[r][c])continue;
+    const nx=ox+c,ny=oy+r;
+    if(nx<0||nx>=W||ny>=H)return false;
+    if(ny>=0&&board[ny][nx])return false;
+  }
+  return true;
+}
+
+function lock(){
+  cur.shape.forEach((row,r)=>row.forEach((v,c)=>{
+    if(v)board[cur.y+r][cur.x+c]={color:cur.color,emoji:cur.emoji};
+  }));
+  // clear lines
+  let cleared=0;
+  for(let r=H-1;r>=0;r--){
+    if(board[r].every(c=>c)){
+      board.splice(r,1);board.unshift(Array(W).fill(null));
+      cleared++;r++;
+    }
+  }
+  if(cleared){
+    lines+=cleared;
+    score+=[0,100,300,500,800][cleared]*(level);
+    level=Math.floor(lines/10)+1;
+    scoreEl.textContent=score;linesEl.textContent=lines;levelEl.textContent=level;
+    clearInterval(gameLoop);gameLoop=setInterval(tick,Math.max(80,500-level*40));
+  }
+  cur=newPiece();
+  if(!valid(cur.shape,cur.x,cur.y)){gameOver();return;}
+  drawNext();
+}
+
+function tick(){if(state!=='playing')return;if(valid(cur.shape,cur.x,cur.y+1))cur.y++;else lock();draw();}
+
+function act(a){
+  if(state!=='playing')return;
+  if(a==='left'&&valid(cur.shape,cur.x-1,cur.y))cur.x--;
+  if(a==='right'&&valid(cur.shape,cur.x+1,cur.y))cur.x++;
+  if(a==='down'&&valid(cur.shape,cur.x,cur.y+1))cur.y++;
+  if(a==='rot'||a==='rotr'){const r=rotate(cur.shape);if(valid(r,cur.x,cur.y))cur.shape=r;}
+  if(a==='rotl'){const r=rotate(rotate(rotate(cur.shape)));if(valid(r,cur.x,cur.y))cur.shape=r;}
+  if(a==='drop'){while(valid(cur.shape,cur.x,cur.y+1))cur.y++;lock();}
+  draw();
+}
+
+function ghostY(){let gy=cur.y;while(valid(cur.shape,cur.x,gy+1))gy++;return gy;}
+
+function draw(){
+  ctx.fillStyle='#0d1117';ctx.fillRect(0,0,C.width,C.height);
+  // grid
+  for(let r=0;r<H;r++)for(let c=0;c<W;c++){
+    ctx.fillStyle='rgba(255,255,255,0.02)';
+    ctx.fillRect(c*SZ,r*SZ,SZ-1,SZ-1);
+  }
+  // board
+  board.forEach((row,r)=>row.forEach((cell,c)=>{
+    if(!cell)return;
+    drawBlock(c,r,cell.color,cell.emoji);
+  }));
+  // ghost
+  const gy=ghostY();
+  cur.shape.forEach((row,r)=>row.forEach((v,c)=>{
+    if(!v)return;
+    ctx.fillStyle='rgba(255,255,255,0.06)';
+    ctx.fillRect((cur.x+c)*SZ,(gy+r)*SZ,SZ-1,SZ-1);
+  }));
+  // current
+  cur.shape.forEach((row,r)=>row.forEach((v,c)=>{
+    if(!v)return;
+    drawBlock(cur.x+c,cur.y+r,cur.color,cur.emoji);
+  }));
+}
+
+function drawBlock(c,r,color,emoji){
+  const x=c*SZ,y=r*SZ;
+  ctx.fillStyle=color;
+  ctx.fillRect(x,y,SZ-1,SZ-1);
+  ctx.fillStyle='rgba(255,255,255,0.2)';
+  ctx.fillRect(x,y,SZ-1,3);
+  ctx.fillStyle='rgba(0,0,0,0.2)';
+  ctx.fillRect(x,y+SZ-4,SZ-1,3);
+  ctx.font='11px serif';ctx.textAlign='center';
+  ctx.fillText(emoji,x+SZ/2,y+SZ-3);
+}
+
+function drawNext(){
+  nctx.fillStyle='rgba(255,255,255,0.03)';nctx.fillRect(0,0,80,80);
+  if(!next)return;
+  const s=next.shape,cs=16;
+  const ox=Math.floor((4-s[0].length)/2)*cs+8;
+  const oy=Math.floor((4-s.length)/2)*cs+8;
+  s.forEach((row,r)=>row.forEach((v,c)=>{
+    if(!v)return;
+    nctx.fillStyle=next.color;nctx.fillRect(ox+c*cs,oy+r*cs,cs-2,cs-2);
+    nctx.font='10px serif';nctx.textAlign='center';
+    nctx.fillText(next.emoji,ox+c*cs+cs/2,oy+r*cs+cs-2);
+  }));
+}
+
+function startGame(){
+  board=Array.from({length:H},()=>Array(W).fill(null));
+  score=0;lines=0;level=1;
+  scoreEl.textContent=0;linesEl.textContent=0;levelEl.textContent=1;
+  next=null;cur=newPiece();drawNext();
+  state='playing';overlay.classList.add('hidden');
+  clearInterval(gameLoop);gameLoop=setInterval(tick,500);
+  draw();
+}
+
+function gameOver(){
+  state='dead';clearInterval(gameLoop);
+  if(score>best){best=score;localStorage.setItem('honktris_best',best);bestEl.textContent=best;}
+  ovScore.style.display='block';ovMsg.style.display='block';
+  ovScore.textContent=score;ovMsg.textContent='THE GEESE HAVE WON. HONK.';
+  overlay.classList.remove('hidden');
+}
+
+document.addEventListener('keydown',e=>{
+  const m={ArrowLeft:'left',ArrowRight:'right',ArrowDown:'down',ArrowUp:'rot',' ':'drop',z:'rotl',Z:'rotl'};
+  if(m[e.key]){e.preventDefault();act(m[e.key]);}
+});
+</script>
+</body>
+</html>

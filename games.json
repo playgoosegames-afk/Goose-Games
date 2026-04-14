@@ -1,0 +1,66 @@
+[
+  {
+    "id": "flapsy",
+    "title": "Flapsy",
+    "emoji": "🪿",
+    "description": "Flap through the pipes without honking into them. A goose's guide to staying airborne.",
+    "filename": "flappy.html",
+    "category": "arcade"
+  },
+  {
+    "id": "goose-snake",
+    "title": "Goose Snake",
+    "emoji": "🍞",
+    "description": "Slither around eating bread, avoid eating yourself. The eternal goose struggle.",
+    "filename": "goose-snake.html",
+    "category": "arcade"
+  },
+  {
+    "id": "goose-2048",
+    "title": "Goose 2048",
+    "emoji": "🔢",
+    "description": "Merge geese to reach the legendary 2048 goose. How big can your flock get?",
+    "filename": "goose-2048.html",
+    "category": "puzzle"
+  },
+  {
+    "id": "goose-breaker",
+    "title": "Goose Breaker",
+    "emoji": "🧱",
+    "description": "Smash bricks with a goose paddle. Breakout, but with more honking.",
+    "filename": "goose-breaker.html",
+    "category": "arcade"
+  },
+  {
+    "id": "honk-tris",
+    "title": "HONK-TRIS",
+    "emoji": "🟦",
+    "description": "Stack falling geese and clear lines before the pond overflows. HONK.",
+    "filename": "honk-tris.html",
+    "category": "puzzle"
+  },
+  {
+    "id": "bread-invaders",
+    "title": "Bread Invaders",
+    "emoji": "🛸",
+    "description": "Loaves of bread descend from the sky. Shoot them before they land. Don't ask why.",
+    "filename": "bread-invaders.html",
+    "category": "arcade"
+  },
+  {
+    "id": "goose-memory",
+    "title": "Goose Memory",
+    "emoji": "🃏",
+    "description": "Flip cards and match pairs of geese. They all look the same — that's the point.",
+    "filename": "goose-memory.html",
+    "category": "puzzle"
+  },
+  {
+    "id": "honkle",
+    "title": "HONKLE",
+    "emoji": "💬",
+    "description": "Guess the 5-letter goose word in 6 tries. Every word honks.",
+    "filename": "honkle.html",
+    "category": "puzzle"
+  }
+]

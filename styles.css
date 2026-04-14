@@ -284,6 +284,46 @@ nav a:hover { color: var(--text); background: var(--surface-2); }
   line-height: 1.5;
 }
 
+/* ===== EMOJI CARD THUMBNAIL ===== */
+.card-emoji-thumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: var(--surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  transition: background 0.2s;
+  overflow: hidden;
+}
+
+/* Subtle scanline texture */
+.card-emoji-thumb::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0,0,0,0.07) 3px,
+    rgba(0,0,0,0.07) 4px
+  );
+  pointer-events: none;
+}
+
+.card-emoji-thumb span {
+  position: relative;
+  z-index: 1;
+  transition: transform 0.2s;
+  display: block;
+  line-height: 1;
+}
+
+.game-card:hover .card-emoji-thumb { background: var(--accent-glow); }
+.game-card:hover .card-emoji-thumb span { transform: scale(1.15); }
+
 /* ===== GAME PAGE ===== */
 .game-page {
   position: relative;

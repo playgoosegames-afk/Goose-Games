@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BREAD INVADERS</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#000;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:'Share Tech Mono',monospace;
+    background-image:radial-gradient(ellipse at center,#0a0a1a 0%,#000 100%)}
+  #wrap{display:flex;flex-direction:column;align-items:center;gap:8px}
+  #hud{display:flex;gap:32px;color:#4caf50;font-family:'VT323',monospace;font-size:22px;letter-spacing:2px;width:480px;justify-content:space-between}
+  #hud span{color:#76ff03}
+  canvas{display:block;border:1px solid #1a3a1a;box-shadow:0 0 30px rgba(76,175,80,0.15),0 0 60px rgba(76,175,80,0.05)}
+  #overlay{position:absolute;inset:0;background:rgba(0,0,0,0.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+  #overlay.hidden{display:none}
+  .scanline{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.05) 2px,rgba(0,0,0,0.05) 4px);pointer-events:none}
+  #game-wrap{position:relative;width:480px;height:520px}
+  .ov-title{font-family:'VT323',monospace;font-size:52px;color:#76ff03;letter-spacing:4px;text-shadow:0 0 20px #76ff03}
+  .ov-sub{font-size:13px;color:#4caf50;letter-spacing:2px;margin-bottom:8px}
+  .ov-goose{font-size:60px;animation:glow 1s ease-in-out infinite alternate}
+  @keyframes glow{from{filter:drop-shadow(0 0 8px #76ff03)}to{filter:drop-shadow(0 0 20px #76ff03)}}
+  .ov-score{font-family:'VT323',monospace;font-size:72px;color:#ff1744;display:none;text-shadow:0 0 20px #ff1744}
+  .ov-msg{font-size:12px;color:#ff1744;letter-spacing:2px;display:none;margin-bottom:12px}
+  .btn{background:transparent;color:#76ff03;font-family:'VT323',monospace;font-size:24px;padding:10px 36px;border:2px solid #76ff03;cursor:pointer;letter-spacing:3px;
+    box-shadow:0 0 10px rgba(118,255,3,0.3);transition:all .2s}
+  .btn:hover{background:rgba(118,255,3,0.1);box-shadow:0 0 20px rgba(118,255,3,0.5)}
+  #lives-row{font-size:22px;letter-spacing:6px}
+  #dpad{display:flex;gap:8px;margin-top:4px}
+  .db{background:rgba(118,255,3,0.08);border:1px solid rgba(118,255,3,0.3);border-radius:6px;font-size:20px;width:52px;height:52px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#76ff03;user-select:none;transition:background .1s}
+  .db:active{background:rgba(118,255,3,0.25)}
+  .db.fire{background:rgba(255,23,68,0.1);border-color:rgba(255,23,68,0.4);color:#ff1744;width:100px}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="hud">
+    <div>SCORE: <span id="score">0</span></div>
+    <div>LEVEL: <span id="level">1</span></div>
+    <div>BEST: <span id="best">0</span></div>
+  </div>
+  <div id="game-wrap">
+    <canvas id="c" width="480" height="520"></canvas>
+    <div class="scanline"></div>
+    <div id="overlay">
+      <div class="ov-goose">🪿</div>
+      <div class="ov-title">BREAD INVADERS</div>
+      <div class="ov-sub">← → to move · SPACE to honk-blast</div>
+      <div class="ov-score" id="ov-score"></div>
+      <div class="ov-msg" id="ov-msg"></div>
+      <button class="btn" onclick="startGame()">[ INSERT HONK ]</button>
+      <div id="lives-row" style="margin-top:8px;color:#4caf50;font-size:13px;letter-spacing:2px">🪿🪿🪿 LIVES</div>
+    </div>
+  </div>
+  <div id="dpad">
+    <div class="db" id="btn-left" ontouchstart="keys.left=true" ontouchend="keys.left=false">◀</div>
+    <div class="db fire" id="btn-fire" ontouchstart="fireBullet()" ontouchend="">🪿 HONK</div>
+    <div class="db" id="btn-right" ontouchstart="keys.right=true" ontouchend="keys.right=false">▶</div>
+  </div>
+</div>
+
+<script>
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+const W=480,H=520;
+const overlay=document.getElementById('overlay');
+const scoreEl=document.getElementById('score'),levelEl=document.getElementById('level'),bestEl=document.getElementById('best');
+const ovScore=document.getElementById('ov-score'),ovMsg=document.getElementById('ov-msg');
+
+let best=parseInt(localStorage.getItem('bread_invaders_best')||0);
+bestEl.textContent=best;
+
+const INVADER_EMOJIS=['🍞','🍞','🥐','🥐','🧇','🧇','🎂'];
+const INVADER_ROWS=4,INVADER_COLS=9;
+let player,invaders,bullets,eBullets,score,lives,level,state,animId,keys,lastShot,eBulletTimer,invDir,invMoveTimer,invDropping;
+
+keys={left:false,right:false,space:false};
+
+function initInvaders(){
+  invaders=[];
+  for(let r=0;r<INVADER_ROWS;r++){
+    for(let c=0;c<INVADER_COLS;c++){
+      invaders.push({x:50+c*44,y:60+r*44,alive:true,row:r,col:c,emoji:INVADER_EMOJIS[r]});
+    }
+  }
+  invDir=1;invMoveTimer=0;invDropping=false;
+}
+
+function startGame(){
+  player={x:W/2,y:H-40,w:36,h:20,speed:4};
+  bullets=[];eBullets=[];
+  score=0;lives=3;level=1;lastShot=0;eBulletTimer=0;
+  scoreEl.textContent=0;levelEl.textContent=1;
+  initInvaders();
+  state='playing';overlay.classList.add('hidden');
+  if(animId)cancelAnimationFrame(animId);
+  loop();
+}
+
+function fireBullet(){
+  if(state!=='playing')return;
+  const now=Date.now();
+  if(now-lastShot<350)return;
+  lastShot=now;
+  bullets.push({x:player.x,y:player.y-10,vy:-9,alive:true});
+}
+
+let frame=0;
+function loop(){
+  animId=requestAnimationFrame(loop);
+  frame++;
+  if(state!=='playing'){draw();return;}
+
+  // player move
+  if(keys.left)player.x=Math.max(18,player.x-player.speed);
+  if(keys.right)player.x=Math.min(W-18,player.x+player.speed);
+
+  // bullets
+  bullets.forEach(b=>{b.y+=b.vy;if(b.y<0)b.alive=false;});
+  bullets=bullets.filter(b=>b.alive);
+
+  // enemy bullets
+  eBulletTimer++;
+  const interval=Math.max(30,80-level*8);
+  if(eBulletTimer>interval){
+    eBulletTimer=0;
+    const alive=invaders.filter(i=>i.alive);
+    if(alive.length){
+      const shooter=alive[Math.floor(Math.random()*alive.length)];
+      eBullets.push({x:shooter.x,y:shooter.y+10,vy:3+level*0.5,alive:true});
+    }
+  }
+  eBullets.forEach(b=>{b.y+=b.vy;if(b.y>H)b.alive=false;});
+  eBullets=eBullets.filter(b=>b.alive);
+
+  // invader movement
+  invMoveTimer++;
+  const aliveCount=invaders.filter(i=>i.alive).length;
+  const moveSpeed=Math.max(4,18-Math.floor((INVADER_ROWS*INVADER_COLS-aliveCount)/4));
+  if(invMoveTimer>=moveSpeed){
+    invMoveTimer=0;
+    let hitWall=false;
+    invaders.forEach(i=>{if(i.alive){i.x+=invDir*4;if(i.x>W-30||i.x<30)hitWall=true;}});
+    if(hitWall){invDir*=-1;invaders.forEach(i=>{if(i.alive)i.y+=16;});}
+  }
+
+  // bullet-invader collision
+  bullets.forEach(b=>{
+    invaders.forEach(i=>{
+      if(!i.alive||!b.alive)return;
+      if(Math.abs(b.x-i.x)<18&&Math.abs(b.y-i.y)<16){
+        i.alive=false;b.alive=false;
+        score+=10*level*(INVADER_ROWS-i.row);
+        scoreEl.textContent=score;
+      }
+    });
+  });
+
+  // enemy bullet-player collision
+  eBullets.forEach(b=>{
+    if(!b.alive)return;
+    if(Math.abs(b.x-player.x)<20&&Math.abs(b.y-player.y)<14){
+      b.alive=false;lives--;
+      if(lives<=0){gameOver();return;}
+    }
+  });
+
+  // invader reaches bottom or player
+  invaders.forEach(i=>{
+    if(i.alive&&i.y>H-60)gameOver();
+  });
+
+  // all dead → next level
+  if(invaders.every(i=>!i.alive)){
+    level++;levelEl.textContent=level;
+    initInvaders();bullets=[];eBullets=[];
+  }
+
+  draw();
+}
+
+function draw(){
+  ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);
+
+  // stars
+  ctx.fillStyle='rgba(255,255,255,0.4)';
+  for(let i=0;i<50;i++){
+    const sx=(i*137)%W,sy=(i*97+frame*0.1*(i%3))%H;
+    ctx.fillRect(sx,sy,1,1);
+  }
+
+  // ground line
+  ctx.strokeStyle='rgba(118,255,3,0.3)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(0,H-20);ctx.lineTo(W,H-20);ctx.stroke();
+
+  // invaders
+  invaders.forEach(i=>{
+    if(!i.alive)return;
+    ctx.font='22px serif';ctx.textAlign='center';
+    const bob=Math.sin(frame*0.05+i.col*0.3)*2;
+    ctx.fillText(i.emoji,i.x,i.y+bob);
+  });
+
+  // player - goose ship
+  ctx.save();ctx.translate(player.x,player.y);
+  // body
+  const g=ctx.createLinearGradient(-18,0,18,0);
+  g.addColorStop(0,'#1b5e20');g.addColorStop(0.5,'#4caf50');g.addColorStop(1,'#1b5e20');
+  ctx.fillStyle=g;
+  ctx.beginPath();
+  ctx.moveTo(0,-18);ctx.lineTo(18,10);ctx.lineTo(8,6);ctx.lineTo(0,10);ctx.lineTo(-8,6);ctx.lineTo(-18,10);
+  ctx.closePath();ctx.fill();
+  ctx.strokeStyle='#76ff03';ctx.lineWidth=1;ctx.stroke();
+  // goose cockpit
+  ctx.font='14px serif';ctx.textAlign='center';ctx.fillText('🪿',-0,4);
+  // cannon glow
+  ctx.fillStyle='rgba(118,255,3,0.6)';
+  ctx.beginPath();ctx.arc(0,-20,3,0,Math.PI*2);ctx.fill();
+  ctx.restore();
+
+  // bullets
+  bullets.forEach(b=>{
+    ctx.fillStyle='#76ff03';
+    ctx.shadowBlur=10;ctx.shadowColor='#76ff03';
+    ctx.fillRect(b.x-2,b.y-8,4,12);
+    ctx.shadowBlur=0;
+  });
+
+  // enemy bullets
+  eBullets.forEach(b=>{
+    ctx.fillStyle='#ff1744';
+    ctx.shadowBlur=8;ctx.shadowColor='#ff1744';
+    ctx.font='14px serif';ctx.textAlign='center';
+    ctx.fillText('🍞',b.x,b.y);
+    ctx.shadowBlur=0;
+  });
+
+  // lives
+  ctx.font='16px serif';ctx.textAlign='left';
+  for(let i=0;i<lives;i++)ctx.fillText('🪿',10+i*28,H-4);
+}
+
+function gameOver(){
+  state='dead';cancelAnimationFrame(animId);
+  if(score>best){best=score;localStorage.setItem('bread_invaders_best',best);bestEl.textContent=best;}
+  ovScore.style.display='block';ovMsg.style.display='block';
+  ovScore.textContent=score;
+  ovMsg.textContent=lives<=0?'THE BREAD HAS DEFEATED YOU.':'THE INVADERS REACHED THE POND!';
+  overlay.classList.remove('hidden');
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowLeft')keys.left=true;
+  if(e.key==='ArrowRight')keys.right=true;
+  if(e.key===' '){e.preventDefault();fireBullet();}
+});
+document.addEventListener('keyup',e=>{
+  if(e.key==='ArrowLeft')keys.left=false;
+  if(e.key==='ArrowRight')keys.right=false;
+});
+</script>
+</body>
+</html>
