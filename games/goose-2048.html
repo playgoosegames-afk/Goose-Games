@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Goose 2048 — HONK til you BONK</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Righteous&family=DM+Sans:wght@400;700;900&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: #fdf6e3;
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Sans', sans-serif;
+    background-image: 
+      radial-gradient(ellipse at top left, #fff9c4 0%, transparent 60%),
+      radial-gradient(ellipse at bottom right, #ffe0b2 0%, transparent 60%);
+  }
+  #app { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 20px; }
+  header { display: flex; align-items: center; gap: 16px; width: 100%; max-width: 420px; justify-content: space-between; }
+  .title { font-family: 'Righteous', cursive; font-size: 40px; color: #5d4037; line-height: 1; }
+  .title span { color: #ff8f00; }
+  .title small { font-size: 13px; color: #bcaaa4; display: block; letter-spacing: 1px; font-family: 'DM Sans', sans-serif; font-weight: 700; }
+  .scores { display: flex; gap: 8px; }
+  .score-box {
+    background: #bcaaa4; color: #fff;
+    border-radius: 8px; padding: 6px 14px; text-align: center;
+    min-width: 70px;
+  }
+  .score-box .lbl { font-size: 10px; letter-spacing: 1px; opacity: 0.8; }
+  .score-box .val { font-family: 'Righteous', cursive; font-size: 22px; }
+  .score-box.main { background: #ff8f00; }
+  #board-wrap {
+    background: #d7ccc8;
+    border-radius: 12px;
+    padding: 10px;
+    box-shadow: 0 8px 32px rgba(93,64,55,0.2);
+    position: relative;
+  }
+  #board {
+    display: grid;
+    grid-template-columns: repeat(4, 95px);
+    grid-template-rows: repeat(4, 95px);
+    gap: 8px;
+  }
+  .cell {
+    width: 95px; height: 95px;
+    background: rgba(255,255,255,0.35);
+    border-radius: 8px;
+  }
+  .tile {
+    width: 95px; height: 95px;
+    border-radius: 8px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    font-family: 'Righteous', cursive;
+    font-size: 28px;
+    position: absolute;
+    transition: left 0.1s, top 0.1s;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    user-select: none;
+  }
+  .tile .emoji { font-size: 26px; line-height: 1; }
+  .tile .num { font-size: 20px; line-height: 1; }
+  .tile.merged { animation: pop 0.2s ease; }
+  @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.18); } 100% { transform: scale(1); } }
+  .tile.new { animation: appear 0.15s ease; }
+  @keyframes appear { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  #overlay {
+    position: fixed; inset: 0;
+    background: rgba(253,246,227,0.92);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 100;
+  }
+  #overlay.hidden { display: none; }
+  #overlay .og { font-size: 80px; animation: swim 1.5s ease-in-out infinite; }
+  @keyframes swim {
+    0%,100% { transform: translateX(-8px) rotate(-5deg); }
+    50% { transform: translateX(8px) rotate(5deg); }
+  }
+  #overlay h2 { font-family: 'Righteous', cursive; font-size: 38px; color: #5d4037; }
+  #overlay p { color: #a1887f; font-size: 13px; letter-spacing: 1px; margin: 4px 0 24px; }
+  #overlay .result { font-family: 'Righteous', cursive; font-size: 60px; color: #ff8f00; display:none; }
+  #overlay .result-sub { font-size: 14px; color: #888; display: none; margin-bottom: 20px; }
+  .play-btn {
+    background: #ff8f00; color: #fff;
+    font-family: 'Righteous', cursive; font-size: 20px;
+    padding: 14px 40px; border-radius: 999px;
+    border: none; cursor: pointer;
+    box-shadow: 0 5px 0 #e65100;
+    transition: transform 0.1s;
+  }
+  .play-btn:hover { transform: translateY(-2px); }
+  .hint { font-size: 11px; color: #bcaaa4; text-align: center; letter-spacing: 1px; }
+  #win-banner {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    background: rgba(255,143,0,0.92);
+    color: #fff; font-family: 'Righteous', cursive; font-size: 32px;
+    padding: 20px 40px; border-radius: 12px;
+    z-index: 10; pointer-events: none;
+    display: none; text-align: center;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="title">GOOSE<span>2048</span><small>HONK til you BONK</small></div>
+    <div class="scores">
+      <div class="score-box main"><div class="lbl">SCORE</div><div class="val" id="score">0</div></div>
+      <div class="score-box"><div class="lbl">BEST</div><div class="val" id="best">0</div></div>
+    </div>
+  </header>
+
+  <div id="board-wrap">
+    <div id="board">
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+    </div>
+    <div id="win-banner">🪿 GOOSE 2048! 🪿<br><small style="font-size:16px">Keep honking!</small></div>
+  </div>
+  <p class="hint">← → ↑ ↓ Arrow keys or swipe to merge</p>
+</div>
+
+<div id="overlay">
+  <div class="og">🪿</div>
+  <h2>GOOSE 2048</h2>
+  <p>Merge geese. Reach 2048. HONK.</p>
+  <div class="result" id="result"></div>
+  <div class="result-sub" id="result-sub"></div>
+  <button class="play-btn" id="play-btn" onclick="newGame()">NEW GAME</button>
+</div>
+
+<script>
+const TILE_DATA = {
+  2:    { bg:'#fff9c4', fg:'#5d4037', emoji:'🥚',   label:'EGG' },
+  4:    { bg:'#fff59d', fg:'#5d4037', emoji:'🐣',   label:'HATCH' },
+  8:    { bg:'#ffe082', fg:'#fff',    emoji:'🐥',   label:'CHICK' },
+  16:   { bg:'#ffca28', fg:'#fff',    emoji:'🦆',   label:'DUCK' },
+  32:   { bg:'#ffa726', fg:'#fff',    emoji:'🪿',   label:'GOOSE' },
+  64:   { bg:'#ff7043', fg:'#fff',    emoji:'😤',   label:'ANGERY' },
+  128:  { bg:'#ef5350', fg:'#fff',    emoji:'🪿💢', label:'HONK' },
+  256:  { bg:'#e53935', fg:'#fff',    emoji:'🪿🔥', label:'CHAOS' },
+  512:  { bg:'#c62828', fg:'#fff',    emoji:'🌊🪿', label:'SQUAD' },
+  1024: { bg:'#4a148c', fg:'#fff',    emoji:'👑🪿', label:'GOOSE GOD' },
+  2048: { bg:'linear-gradient(135deg,#ff8f00,#ff6f00)', fg:'#fff', emoji:'🏆🪿', label:'2048 HONK' },
+};
+
+let grid, score, best, won;
+best = parseInt(localStorage.getItem('goose2048_best') || 0);
+document.getElementById('best').textContent = best;
+
+function newGame() {
+  grid = Array.from({length:4}, () => Array(4).fill(0));
+  score = 0; won = false;
+  document.getElementById('score').textContent = 0;
+  document.getElementById('win-banner').style.display = 'none';
+  document.getElementById('overlay').classList.add('hidden');
+  addRandom(); addRandom();
+  render();
+}
+
+function addRandom() {
+  const empty = [];
+  grid.forEach((row,r) => row.forEach((v,c) => { if (!v) empty.push([r,c]); }));
+  if (!empty.length) return;
+  const [r,c] = empty[Math.floor(Math.random()*empty.length)];
+  grid[r][c] = Math.random() < 0.9 ? 2 : 4;
+}
+
+function slide(row) {
+  let arr = row.filter(v => v);
+  let merged = false;
+  for (let i = 0; i < arr.length - 1; i++) {
+    if (arr[i] === arr[i+1]) {
+      arr[i] *= 2; arr[i+1] = 0;
+      score += arr[i];
+      if (arr[i] === 2048 && !won) { won = true; showWin(); }
+      merged = true;
+    }
+  }
+  arr = arr.filter(v => v);
+  while (arr.length < 4) arr.push(0);
+  return arr;
+}
+
+function move(dir) {
+  const prev = JSON.stringify(grid);
+  if (dir === 'left')  grid = grid.map(r => slide(r));
+  if (dir === 'right') grid = grid.map(r => slide([...r].reverse()).reverse());
+  if (dir === 'up')    grid = transpose(grid.map ? grid : grid).map(r => slide(r)); // handled below
+  if (dir === 'down')  grid = transpose(grid).map(r => slide([...r].reverse()).reverse());
+  if (dir === 'up')    grid = transpose(grid.map(r => slide(r)));
+  
+  // redo up properly
+  if (dir === 'up') {
+    const t = transpose(JSON.parse(prev));
+    const slid = t.map(r => slide(r));
+    grid = transpose(slid);
+  }
+  if (dir === 'down') {
+    const t = transpose(JSON.parse(prev));
+    const slid = t.map(r => slide([...r].reverse()).reverse());
+    grid = transpose(slid);
+  }
+  if (dir === 'left') grid = JSON.parse(prev).map(r => slide(r));
+  if (dir === 'right') grid = JSON.parse(prev).map(r => slide([...r].reverse()).reverse());
+
+  if (JSON.stringify(grid) !== prev) {
+    addRandom();
+    document.getElementById('score').textContent = score;
+    if (score > best) { best = score; localStorage.setItem('goose2048_best', best); document.getElementById('best').textContent = best; }
+    render();
+    if (isGameOver()) setTimeout(showGameOver, 400);
+  }
+}
+
+function transpose(g) {
+  return g[0].map((_, c) => g.map(r => r[c]));
+}
+
+function isGameOver() {
+  for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) {
+    if (grid[r][c] === 0) return false;
+    if (c < 3 && grid[r][c] === grid[r][c+1]) return false;
+    if (r < 3 && grid[r][c] === grid[r+1][c]) return false;
+  }
+  return true;
+}
+
+function showWin() {
+  const b = document.getElementById('win-banner');
+  b.style.display = 'block';
+  setTimeout(() => b.style.display = 'none', 2500);
+}
+
+function showGameOver() {
+  const r = document.getElementById('result');
+  const s = document.getElementById('result-sub');
+  r.style.display = 'block'; s.style.display = 'block';
+  r.textContent = score;
+  s.textContent = 'GAME OVER — Score: ' + score;
+  document.getElementById('overlay').classList.remove('hidden');
+}
+
+function render() {
+  const board = document.getElementById('board-wrap');
+  // remove old tiles
+  board.querySelectorAll('.tile').forEach(t => t.remove());
+  const boardEl = document.getElementById('board');
+  const off = boardEl.offsetLeft + 10;
+  const offt = boardEl.offsetTop + 10;
+
+  grid.forEach((row, r) => {
+    row.forEach((val, c) => {
+      if (!val) return;
+      const d = TILE_DATA[val] || TILE_DATA[2048];
+      const tile = document.createElement('div');
+      tile.className = 'tile new';
+      tile.style.left = (c * 103 + 10) + 'px';
+      tile.style.top = (r * 103 + 10) + 'px';
+      tile.style.background = d.bg;
+      tile.style.color = d.fg;
+      tile.innerHTML = `<div class="emoji">${d.emoji}</div><div class="num">${val}</div>`;
+      board.appendChild(tile);
+    });
+  });
+}
+
+// keyboard
+document.addEventListener('keydown', e => {
+  const map = { ArrowLeft:'left', ArrowRight:'right', ArrowUp:'up', ArrowDown:'down' };
+  if (map[e.key]) { e.preventDefault(); move(map[e.key]); }
+});
+
+// swipe
+let tx, ty;
+document.getElementById('board-wrap').addEventListener('touchstart', e => { tx=e.touches[0].clientX; ty=e.touches[0].clientY; }, {passive:true});
+document.getElementById('board-wrap').addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - tx;
+  const dy = e.changedTouches[0].clientY - ty;
+  if (Math.abs(dx) > Math.abs(dy)) move(dx > 0 ? 'right' : 'left');
+  else move(dy > 0 ? 'down' : 'up');
+}, {passive:true});
+</script>
+</body>
+</html>
