@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HONKLE</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=DM+Mono:wght@400;500&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#fefefe;display:flex;flex-direction:column;align-items:center;min-height:100vh;font-family:'DM Mono',monospace;
+    background-image:radial-gradient(circle at 50% 0%,#fff9e6 0%,transparent 60%)}
+  header{width:100%;max-width:480px;border-bottom:2px solid #f0e6c8;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+  header h1{font-family:'Alfa Slab One',serif;font-size:34px;color:#5d4037;letter-spacing:3px}
+  header h1 span{color:#ff8f00}
+  .streak{font-size:12px;color:#999;text-align:right;letter-spacing:1px}
+  .streak strong{display:block;font-family:'Alfa Slab One',serif;font-size:22px;color:#ff8f00}
+  #msg-bar{height:36px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;letter-spacing:1px;color:#5d4037;background:transparent;transition:opacity .3s}
+  #grid{display:flex;flex-direction:column;gap:6px;margin-bottom:20px}
+  .row{display:flex;gap:6px}
+  .tile{width:58px;height:58px;border:2px solid #ddd;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Alfa Slab One',serif;font-size:26px;color:#333;transition:transform .1s;user-select:none;background:#fff}
+  .tile.filled{border-color:#aaa;animation:tileIn .1s ease}
+  @keyframes tileIn{0%{transform:scale(1.12)}100%{transform:scale(1)}}
+  .tile.flip{animation:flip .5s ease forwards}
+  @keyframes flip{0%{transform:rotateX(0);background:#fff;border-color:#aaa;color:#333}
+    49%{transform:rotateX(-90deg);background:#fff}
+    50%{transform:rotateX(-90deg)}
+    100%{transform:rotateX(0)}}
+  .tile.correct{background:#43a047;border-color:#43a047;color:#fff}
+  .tile.present{background:#ffa000;border-color:#ffa000;color:#fff}
+  .tile.absent{background:#9e9e9e;border-color:#9e9e9e;color:#fff}
+  .tile.shake{animation:shake .4s ease}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+  #keyboard{display:flex;flex-direction:column;gap:6px;align-items:center;width:100%;max-width:480px;padding:0 10px}
+  .kb-row{display:flex;gap:5px;justify-content:center}
+  .key{height:52px;min-width:36px;padding:0 6px;border-radius:6px;border:none;background:#f0e6c8;color:#5d4037;font-family:'DM Mono',monospace;font-weight:500;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;user-select:none}
+  .key:active{filter:brightness(0.9)}
+  .key.wide{min-width:58px;font-size:12px}
+  .key.correct{background:#43a047;color:#fff}
+  .key.present{background:#ffa000;color:#fff}
+  .key.absent{background:#bdbdbd;color:#fff}
+  #overlay{position:fixed;inset:0;background:rgba(254,254,254,0.95);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;z-index:100}
+  #overlay.hidden{display:none}
+  .ov-goose{font-size:64px;animation:bounce 1s ease-in-out infinite alternate}
+  @keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-14px)}}
+  .ov-title{font-family:'Alfa Slab One',serif;font-size:48px;color:#5d4037;letter-spacing:4px}
+  .ov-title span{color:#ff8f00}
+  .ov-sub{font-size:12px;color:#aaa;letter-spacing:2px;margin-bottom:8px}
+  .ov-answer{font-family:'Alfa Slab One',serif;font-size:40px;color:#43a047;display:none}
+  .ov-answer-sub{font-size:11px;color:#aaa;letter-spacing:1px;display:none;margin-bottom:12px}
+  .btn{background:#ff8f00;color:#fff;font-family:'Alfa Slab One',serif;font-size:18px;padding:14px 40px;border-radius:8px;border:none;cursor:pointer;letter-spacing:2px;box-shadow:0 4px 0 #e65100;transition:transform .1s}
+  .btn:hover{transform:translateY(-2px)}
+  .how-to{font-size:11px;color:#ccc;max-width:280px;text-align:center;line-height:1.6;letter-spacing:.5px}
+  .how-to strong{color:#ff8f00}
+</style>
+</head>
+<body>
+<header>
+  <h1>H<span>O</span>NKLE</h1>
+  <div class="streak">STREAK<strong id="streak">0</strong></div>
+</header>
+<div id="msg-bar"></div>
+<div id="grid"></div>
+<div id="keyboard"></div>
+
+<div id="overlay">
+  <div class="ov-goose">🪿</div>
+  <div class="ov-title">H<span>O</span>NKLE</div>
+  <div class="ov-sub">Guess the goose word in 6 tries</div>
+  <div class="ov-answer" id="ov-answer"></div>
+  <div class="ov-answer-sub" id="ov-answer-sub"></div>
+  <div class="how-to">
+    <strong>GREEN</strong> = right letter, right spot<br>
+    <strong>ORANGE</strong> = right letter, wrong spot<br>
+    <strong>GREY</strong> = letter not in word
+  </div>
+  <button class="btn" style="margin-top:12px" onclick="startGame()">🪿 START HONKLING</button>
+</div>
+
+<script>
+const WORDS=['GOOSE','HONKS','BREAD','PONDS','FLOCK','WINGS','BEAKS','HATCH','QUACK','DUCKS','GRAZE','REEDS','NESTS','SWIMS','FLAPS','HONKY','GAGGL','WADGE','GOSLI','WATRY','CLUCK','GEESE','LAKES','MARSH','PLUME','FLOAT','FEATS','DRAKE','DOWNS','CREEK'];
+const VALID=new Set([...WORDS,'CRANE','HERON','HEIST','PLONK','FLUNK','CHUNK','CLUNK','STORK','SNIPE','EGRET','GREBE','SWIFT','DUNNO','ABOUT','THOSE','OTHER','BIRDS','THESE','RIVER','STONE','BANKS','WATER','LILAC','GREEN','GRASS','TRACK','STEAM','BLOOM','PLANT','LEAFY','BROOD','DANCE','SWOOP','GLIDE','SOARS']);
+
+const KEYS=[['Q','W','E','R','T','Y','U','I','O','P'],['A','S','D','F','G','H','J','K','L'],['ENTER','Z','X','C','V','B','N','M','⌫']];
+
+let target,grid,currentRow,currentCol,gameOver,streak;
+streak=parseInt(localStorage.getItem('honkle_streak')||0);
+document.getElementById('streak').textContent=streak;
+
+function buildGrid(){
+  const g=document.getElementById('grid');g.innerHTML='';
+  grid=[];
+  for(let r=0;r<6;r++){
+    const row=document.createElement('div');row.className='row';
+    const rowTiles=[];
+    for(let c=0;c<5;c++){
+      const tile=document.createElement('div');tile.className='tile';
+      row.appendChild(tile);rowTiles.push(tile);
+    }
+    g.appendChild(row);grid.push(rowTiles);
+  }
+}
+
+function buildKeyboard(){
+  const kb=document.getElementById('keyboard');kb.innerHTML='';
+  KEYS.forEach(row=>{
+    const div=document.createElement('div');div.className='kb-row';
+    row.forEach(k=>{
+      const btn=document.createElement('button');
+      btn.className='key'+(k.length>1?' wide':'');
+      btn.dataset.key=k;btn.textContent=k;
+      btn.addEventListener('click',()=>handleKey(k));
+      div.appendChild(btn);
+    });
+    kb.appendChild(div);
+  });
+}
+
+function startGame(){
+  target=WORDS[Math.floor(Math.random()*WORDS.length)];
+  currentRow=0;currentCol=0;gameOver=false;
+  buildGrid();buildKeyboard();
+  document.getElementById('overlay').classList.add('hidden');
+  document.getElementById('ov-answer').style.display='none';
+  document.getElementById('ov-answer-sub').style.display='none';
+  setMsg('');
+}
+
+let currentGuess=[];
+
+function handleKey(k){
+  if(gameOver)return;
+  if(k==='⌫'||k==='Backspace'){
+    if(currentGuess.length>0){
+      currentGuess.pop();currentCol--;
+      grid[currentRow][currentCol].textContent='';
+      grid[currentRow][currentCol].classList.remove('filled');
+    }
+    return;
+  }
+  if(k==='ENTER'||k==='Enter'){
+    submitGuess();return;
+  }
+  if(/^[A-Z]$/.test(k)&&currentCol<5){
+    grid[currentRow][currentCol].textContent=k;
+    grid[currentRow][currentCol].classList.add('filled');
+    currentGuess.push(k);currentCol++;
+  }
+}
+
+function submitGuess(){
+  if(currentGuess.length<5){shakeTiles();setMsg('Need 5 letters, goose.');return;}
+  const word=currentGuess.join('');
+  if(!VALID.has(word)&&!WORDS.includes(word)){shakeTiles();setMsg('Not a goose word!');return;}
+  revealGuess(word);
+}
+
+function revealGuess(word){
+  const result=score(word,target);
+  result.forEach((res,i)=>{
+    const tile=grid[currentRow][i];
+    setTimeout(()=>{
+      tile.classList.add('flip');
+      setTimeout(()=>{tile.classList.add(res);},250);
+      updateKey(word[i],res);
+    },i*100);
+  });
+  const won=result.every(r=>r==='correct');
+  const lost=currentRow===5&&!won;
+  setTimeout(()=>{
+    if(won){
+      streak++;localStorage.setItem('honkle_streak',streak);
+      document.getElementById('streak').textContent=streak;
+      const msgs=['GOOSE GENIUS!','PERFECT HONK!','THE POND IS YOURS!','HONKLE MASTER!'];
+      setMsg(msgs[Math.floor(Math.random()*msgs.length)]+' 🪿');
+      gameOver=true;setTimeout(showEnd,1200,true);
+    } else if(lost){
+      setMsg('HONK. The word was '+target+'.');
+      gameOver=true;streak=0;localStorage.setItem('honkle_streak',0);
+      document.getElementById('streak').textContent=0;
+      setTimeout(showEnd,1200,false);
+    } else {
+      currentRow++;currentCol=0;currentGuess=[];
+    }
+  },result.length*100+400);
+}
+
+function score(guess,target){
+  const res=Array(5).fill('absent');
+  const tArr=[...target];
+  const gArr=[...guess];
+  // correct pass
+  gArr.forEach((c,i)=>{if(c===tArr[i]){res[i]='correct';tArr[i]=null;gArr[i]=null;}});
+  // present pass
+  gArr.forEach((c,i)=>{
+    if(c===null)return;
+    const ti=tArr.indexOf(c);
+    if(ti>-1){res[i]='present';tArr[ti]=null;}
+  });
+  return res;
+}
+
+function updateKey(letter,state){
+  const btn=document.querySelector(`.key[data-key="${letter}"]`);
+  if(!btn)return;
+  const priority={correct:3,present:2,absent:1};
+  const cur=priority[btn.dataset.state||'']||0;
+  if(priority[state]>cur){btn.classList.remove('correct','present','absent');btn.classList.add(state);btn.dataset.state=state;}
+}
+
+function shakeTiles(){
+  grid[currentRow].forEach(t=>{t.classList.add('shake');setTimeout(()=>t.classList.remove('shake'),400);});
+}
+
+function setMsg(m){
+  const el=document.getElementById('msg-bar');
+  el.textContent=m;el.style.opacity=1;
+  if(m)setTimeout(()=>el.style.opacity=0,2000);
+}
+
+function showEnd(won){
+  const ov=document.getElementById('overlay');
+  document.getElementById('ov-answer').style.display='block';
+  document.getElementById('ov-answer-sub').style.display='block';
+  document.getElementById('ov-answer').textContent=target;
+  document.getElementById('ov-answer-sub').textContent=won?`Solved in ${currentRow+1} ${currentRow===0?'try':'tries'} 🪿`:'Better luck next honk 🪿';
+  ov.classList.remove('hidden');
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.ctrlKey||e.altKey||e.metaKey)return;
+  const k=e.key.toUpperCase();
+  if(k==='ENTER'||k==='BACKSPACE'||(/^[A-Z]$/.test(k)))handleKey(k==='BACKSPACE'?'⌫':k);
+});
+</script>
+</body>
+</html>
