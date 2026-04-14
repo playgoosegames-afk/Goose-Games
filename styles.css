@@ -23,15 +23,55 @@ body {
   overflow-x: hidden;
 }
 
-/* Subtle dot grid */
+/* Colourful gradient mesh */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background-image: radial-gradient(circle, rgba(99,102,241,0.06) 1px, transparent 1px);
+  background:
+    radial-gradient(ellipse 60% 50% at 15% 20%, rgba(139,92,246,0.28) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 40% at 85% 10%, rgba(236,72,153,0.22) 0%, transparent 65%),
+    radial-gradient(ellipse 55% 45% at 75% 85%, rgba(20,184,166,0.2) 0%, transparent 65%),
+    radial-gradient(ellipse 45% 40% at 5% 85%, rgba(249,115,22,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 35% at 50% 50%, rgba(99,102,241,0.12) 0%, transparent 70%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Dot grid on top of gradient */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
   background-size: 28px 28px;
   z-index: 0;
   pointer-events: none;
+}
+
+/* ===== FLOATING BACKGROUND EMOJIS ===== */
+.bg-floaters {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.bg-floaters span {
+  position: absolute;
+  bottom: -80px;
+  font-size: 1.5rem;
+  opacity: 0;
+  animation: floatUp linear infinite;
+  filter: blur(0.5px);
+}
+
+@keyframes floatUp {
+  0%   { transform: translateY(0)   rotate(0deg);   opacity: 0; }
+  5%   { opacity: 0.18; }
+  90%  { opacity: 0.12; }
+  100% { transform: translateY(-110vh) rotate(25deg); opacity: 0; }
 }
 
 /* ===== HEADER ===== */
