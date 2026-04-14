@@ -36,7 +36,7 @@
 
 <main>
   <section class="hero">
-    <div class="hero-badge">🪿 8 games · Free · No account needed</div>
+    <div class="hero-badge">🪿 19 games · Free · No account needed</div>
     <h1>Free Goose Games.<br><span>Play Instantly.</span></h1>
     <p>Browser arcade games starring geese — no downloads, no sign-up, no nonsense. Just honk.</p>
   </section>
@@ -45,6 +45,9 @@
     <button class="filter-btn active" data-filter="all">All Games</button>
     <button class="filter-btn" data-filter="arcade">Arcade</button>
     <button class="filter-btn" data-filter="puzzle">Puzzle</button>
+    <button class="filter-btn" data-filter="racing">Racing</button>
+    <button class="filter-btn" data-filter="sports">Sports</button>
+    <button class="filter-btn" data-filter="creative">Creative</button>
   </div>
 
   <section class="games-section">
@@ -70,18 +73,20 @@
     .then(r => r.json())
     .then(games => {
       const grid = document.getElementById('games-grid');
-      grid.innerHTML = games.map(game => `
+      grid.innerHTML = games.map(game => {
+        const thumb = game.thumb
+          ? `<div class="card-thumb"><img src="${game.thumb}" alt="${game.title}" loading="lazy"></div>`
+          : `<div class="card-emoji-thumb"><span>${game.emoji}</span></div>`;
+        return `
         <a href="games/${game.filename}" class="game-card" data-category="${game.category}">
-          <div class="card-emoji-thumb">
-            <span>${game.emoji}</span>
-          </div>
+          ${thumb}
           <div class="card-body">
             <div class="card-category">${game.category}</div>
             <div class="card-title">${game.title}</div>
             <div class="card-desc">${game.description}</div>
           </div>
-        </a>
-      `).join('');
+        </a>`;
+      }).join('');
 
       // Wire up filter buttons
       document.querySelectorAll('.filter-btn').forEach(btn => {

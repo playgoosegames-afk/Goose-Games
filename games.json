@@ -1,8 +1,9 @@
 [
   {
-    "id": "flapsy",
+    "id": "flappy",
     "title": "Flapsy",
     "emoji": "🪿",
+    "thumb": "thumbs/flappy.jpg",
     "description": "Flap through the pipes without honking into them. A goose's guide to staying airborne.",
     "filename": "flappy.html",
     "category": "arcade"
@@ -11,6 +12,7 @@
     "id": "goose-snake",
     "title": "Goose Snake",
     "emoji": "🍞",
+    "thumb": "thumbs/goose-snake.jpg",
     "description": "Slither around eating bread, avoid eating yourself. The eternal goose struggle.",
     "filename": "goose-snake.html",
     "category": "arcade"
@@ -19,6 +21,7 @@
     "id": "goose-2048",
     "title": "Goose 2048",
     "emoji": "🔢",
+    "thumb": "thumbs/goose-2048.jpg",
     "description": "Merge geese to reach the legendary 2048 goose. How big can your flock get?",
     "filename": "goose-2048.html",
     "category": "puzzle"
@@ -27,6 +30,7 @@
     "id": "goose-breaker",
     "title": "Goose Breaker",
     "emoji": "🧱",
+    "thumb": "thumbs/goose-breaker.jpg",
     "description": "Smash bricks with a goose paddle. Breakout, but with more honking.",
     "filename": "goose-breaker.html",
     "category": "arcade"
@@ -35,6 +39,7 @@
     "id": "honk-tris",
     "title": "HONK-TRIS",
     "emoji": "🟦",
+    "thumb": "thumbs/honk-tris.jpg",
     "description": "Stack falling geese and clear lines before the pond overflows. HONK.",
     "filename": "honk-tris.html",
     "category": "puzzle"
@@ -43,6 +48,7 @@
     "id": "bread-invaders",
     "title": "Bread Invaders",
     "emoji": "🛸",
+    "thumb": "thumbs/bread-invaders.jpg",
     "description": "Loaves of bread descend from the sky. Shoot them before they land. Don't ask why.",
     "filename": "bread-invaders.html",
     "category": "arcade"
@@ -51,6 +57,7 @@
     "id": "goose-memory",
     "title": "Goose Memory",
     "emoji": "🃏",
+    "thumb": "thumbs/goose-memory.jpg",
     "description": "Flip cards and match pairs of geese. They all look the same — that's the point.",
     "filename": "goose-memory.html",
     "category": "puzzle"
@@ -59,8 +66,108 @@
     "id": "honkle",
     "title": "HONKLE",
     "emoji": "💬",
+    "thumb": "thumbs/honkle.jpg",
     "description": "Guess the 5-letter goose word in 6 tries. Every word honks.",
     "filename": "honkle.html",
     "category": "puzzle"
+  },
+  {
+    "id": "nitro-racing",
+    "title": "Nitro Racing",
+    "emoji": "🏎️",
+    "thumb": "https://cdn2.scratch.mit.edu/get_image/project/400349603_480x360.png",
+    "description": "Story mode, online multiplayer, track editor & 18 missions.",
+    "filename": "nitro-racing.html",
+    "category": "racing"
+  },
+  {
+    "id": "mini-golf",
+    "title": "Mini Golf Online",
+    "emoji": "⛳",
+    "thumb": "https://cdn2.scratch.mit.edu/get_image/project/418924306_480x360.png",
+    "description": "Online multiplayer mini golf with challenge system. #1 trending!",
+    "filename": "mini-golf.html",
+    "category": "sports"
+  },
+  {
+    "id": "blockhead",
+    "title": "Blockhead",
+    "emoji": "🧩",
+    "thumb": "https://cdn2.scratch.mit.edu/get_image/project/1169627088_480x360.png",
+    "description": "Game Jam quality puzzle platformer with polished story mode.",
+    "filename": "blockhead.html",
+    "category": "puzzle"
+  },
+  {
+    "id": "pixel-art",
+    "title": "Pixel Art Creator",
+    "emoji": "🎨",
+    "thumb": "https://cdn2.scratch.mit.edu/get_image/project/707042689_480x360.png",
+    "description": "Scratch Featured! 100K+ views. Full color customization.",
+    "filename": "pixel-art.html",
+    "category": "creative"
+  },
+  {
+    "id": "minecraft-clone",
+    "title": "Minecraft Clone",
+    "emoji": "⛏️",
+    "thumb": "https://cdn2.scratch.mit.edu/get_image/project/42125618_480x360.png",
+    "description": "Multiple dimensions, 100+ blocks, full save/load system.",
+    "filename": "minecraft-clone.html",
+    "category": "creative"
+  },
+  {
+    "id": "laser-connect",
+    "title": "Laser Connect",
+    "emoji": "🔦",
+    "thumb": "https://cdn2.scratch.mit.edu/get_image/project/542588218_480x360.png",
+    "description": "2-player cooperative laser puzzle. Team up to solve it!",
+    "filename": "laser-connect.html",
+    "category": "puzzle"
+  },
+  {
+    "id": "longcat",
+    "title": "LongCat",
+    "emoji": "🐱",
+    "thumb": "https://cdn2.scratch.mit.edu/get_image/project/586062533_480x360.png",
+    "description": "Fill-the-space puzzle inspired by Fancade. Satisfying and clever!",
+    "filename": "longcat.html",
+    "category": "puzzle"
+  },
+  {
+    "id": "hill-climb",
+    "title": "Hill Climb Racing",
+    "emoji": "🚗",
+    "thumb": "https://cdn2.scratch.mit.edu/get_image/project/56667360_480x360.png",
+    "description": "Physics-based racing inspired by the classic mobile game.",
+    "filename": "hill-climb.html",
+    "category": "racing"
+  },
+  {
+    "id": "f1-speedway",
+    "title": "F1 Speedway",
+    "emoji": "🏁",
+    "thumb": "https://cdn2.scratch.mit.edu/get_image/project/228891503_480x360.png",
+    "description": "5 tracks, 3 laps, engine sounds. Full F1 racing experience!",
+    "filename": "f1-speedway.html",
+    "category": "racing"
+  },
+  {
+    "id": "dino-dash",
+    "title": "Dino Dash",
+    "emoji": "🦕",
+    "thumb": null,
+    "description": "Run, jump, and dodge through an endless prehistoric world. Beat your high score!",
+    "filename": "dino-dash.html",
+    "category": "arcade"
+  },
+  {
+    "id": "penalty-shots",
+    "title": "Penalty Shots",
+    "emoji": "⚽",
+    "thumb": "https://cdn2.scratch.mit.edu/get_image/project/798648038_480x360.png",
+    "description": "Pull-and-shoot penalty kicks. Simple, fun, addictive!",
+    "filename": "penalty-shots.html",
+    "category": "sports"
   }
 ]
