@@ -147,8 +147,9 @@ function updateLives() {
 
 function loop() {
   animId = requestAnimationFrame(loop);
-  update();
+  if (state !== 'paused') update();
   draw();
+  drawStateOverlay();
 }
 
 function update() {
@@ -178,9 +179,14 @@ function update() {
     lives--;
     updateLives();
     if (lives <= 0) { gameOver(); return; }
-    ball.x = W/2; ball.y = H - 50;
-    ball.vx = 3 + level * 0.3;
-    ball.vy = -(3.5 + level * 0.3);
+    state = 'launch';
+    ball.vx = 0; ball.vy = 0;
+    return;
+  }
+  if (state === 'launch') {
+    ball.x = paddle.x + paddle.w / 2;
+    ball.y = paddle.y - ball.r - 2;
+    return;
   }
 
   // bricks
@@ -269,6 +275,26 @@ function draw() {
   ctx.fill();
 }
 
+function drawStateOverlay() {
+  if (state === 'launch') {
+    ctx.fillStyle = 'rgba(255,235,59,0.85)';
+    ctx.font = 'bold 18px "Boogaloo", cursive';
+    ctx.textAlign = 'center';
+    ctx.fillText('🪿 CLICK TO LAUNCH', W/2, paddle.y - ball.r - 14);
+  }
+  if (state === 'paused') {
+    ctx.fillStyle = 'rgba(26,35,126,0.82)';
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#ffeb3b';
+    ctx.font = '48px "Boogaloo", cursive';
+    ctx.textAlign = 'center';
+    ctx.fillText('PAUSED', W/2, H/2 - 10);
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.font = '14px "Poppins", sans-serif';
+    ctx.fillText('PRESS P TO RESUME', W/2, H/2 + 26);
+  }
+}
+
 function gameOver() {
   state = 'dead';
   if (score > best) { best = score; localStorage.setItem('goose_breaker_best', best); bestEl.textContent = best; }
@@ -277,6 +303,25 @@ function gameOver() {
   ovMsg.textContent = 'GAME OVER — THE GEESE ARE ANGRY';
   overlay.classList.remove('hidden');
 }
+
+// launch on click/tap
+canvas.addEventListener('click', () => {
+  if (state === 'launch') {
+    state = 'playing';
+    ball.vx = (3 + level * 0.3) * (Math.random() > 0.5 ? 1 : -1);
+    ball.vy = -(3.5 + level * 0.3);
+  }
+});
+
+let bPaused = false;
+document.addEventListener('keydown', e => {
+  if (e.key === 'p' || e.key === 'P') {
+    if (state === 'playing' || state === 'paused') {
+      bPaused = !bPaused;
+      state = bPaused ? 'paused' : 'playing';
+    }
+  }
+});
 
 // mouse
 canvas.addEventListener('mousemove', e => {

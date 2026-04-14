@@ -61,6 +61,11 @@
   </div>
   <div id="game-wrap">
     <canvas id="c" width="200" height="400"></canvas>
+    <div id="pause-screen" style="display:none;position:absolute;inset:0;background:rgba(13,17,23,0.93);border-radius:6px;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;" onclick="document.dispatchEvent(new KeyboardEvent('keydown',{key:'p'}))">
+      <div style="font-size:52px">🪿</div>
+      <div style="font-family:'Bungee Shade',cursive;font-size:32px;color:#ffeb3b">PAUSED</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:2px">PRESS P TO RESUME</div>
+    </div>
     <div id="overlay">
       <div class="ov-goose">🪿</div>
       <div class="ov-title">HONK-TRIS</div>
@@ -145,8 +150,16 @@ function act(a){
   if(a==='left'&&valid(cur.shape,cur.x-1,cur.y))cur.x--;
   if(a==='right'&&valid(cur.shape,cur.x+1,cur.y))cur.x++;
   if(a==='down'&&valid(cur.shape,cur.x,cur.y+1))cur.y++;
-  if(a==='rot'||a==='rotr'){const r=rotate(cur.shape);if(valid(r,cur.x,cur.y))cur.shape=r;}
-  if(a==='rotl'){const r=rotate(rotate(rotate(cur.shape)));if(valid(r,cur.x,cur.y))cur.shape=r;}
+  if(a==='rot'||a==='rotr'){
+    const r=rotate(cur.shape);
+    const kicks=[0,-1,1,-2,2];
+    for(const k of kicks){if(valid(r,cur.x+k,cur.y)){cur.shape=r;cur.x+=k;break;}}
+  }
+  if(a==='rotl'){
+    const r=rotate(rotate(rotate(cur.shape)));
+    const kicks=[0,-1,1,-2,2];
+    for(const k of kicks){if(valid(r,cur.x+k,cur.y)){cur.shape=r;cur.x+=k;break;}}
+  }
   if(a==='drop'){while(valid(cur.shape,cur.x,cur.y+1))cur.y++;lock();}
   draw();
 }
@@ -223,7 +236,16 @@ function gameOver(){
   overlay.classList.remove('hidden');
 }
 
+let tPaused=false;
 document.addEventListener('keydown',e=>{
+  if(e.key==='p'||e.key==='P'){
+    if(state==='playing'||state==='paused'){
+      tPaused=!tPaused;state=tPaused?'paused':'playing';
+      document.getElementById('pause-screen').style.display=tPaused?'flex':'none';
+    }
+    return;
+  }
+  if(tPaused)return;
   const m={ArrowLeft:'left',ArrowRight:'right',ArrowDown:'down',ArrowUp:'rot',' ':'drop',z:'rotl',Z:'rotl'};
   if(m[e.key]){e.preventDefault();act(m[e.key]);}
 });

@@ -116,6 +116,11 @@
   </div>
   <div id="game-area">
     <canvas id="c" width="400" height="400"></canvas>
+    <div id="pause-overlay" style="display:none;position:absolute;inset:0;background:rgba(232,245,233,0.93);border-radius:16px;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;" onclick="document.dispatchEvent(new KeyboardEvent('keydown',{key:'p'}))">
+      <div style="font-size:56px">🪿</div>
+      <div style="font-family:'Fredoka One',cursive;font-size:36px;color:#2e7d32">PAUSED</div>
+      <div style="font-size:11px;color:#888;letter-spacing:2px">PRESS P TO RESUME</div>
+    </div>
     <div id="overlay">
       <div class="big-goose">🪿</div>
       <h2>GOOSE SNAKE</h2>
@@ -144,7 +149,7 @@ const honksEl = document.getElementById('honks');
 const deadScoreEl = document.getElementById('dead-score');
 const deadTxtEl = document.getElementById('dead-txt');
 
-let snake, dir, nextDir, food, score, best, honkCount, gameLoop, state;
+let snake, dir, nextDir, food, score, best, honkCount, gameLoop, state, gameSpeed, paused;
 best = parseInt(localStorage.getItem('goose_snake_best') || 0);
 bestEl.textContent = best;
 
@@ -162,13 +167,14 @@ function placeFood() {
 function startGame() {
   snake = [{x:10,y:10},{x:9,y:10},{x:8,y:10}];
   dir = {x:1, y:0}; nextDir = {x:1,y:0};
-  score = 0; honkCount = 0;
+  score = 0; honkCount = 0; gameSpeed = 130; paused = false;
   scoreEl.textContent = 0; honksEl.textContent = 0;
   placeFood();
   overlay.classList.add('hidden');
+  document.getElementById('pause-overlay').style.display = 'none';
   state = 'playing';
   clearInterval(gameLoop);
-  gameLoop = setInterval(tick, 130);
+  gameLoop = setInterval(tick, gameSpeed);
 }
 
 function setDir(x, y) {
@@ -177,6 +183,7 @@ function setDir(x, y) {
 }
 
 function tick() {
+  if (state !== 'playing') return;
   dir = nextDir;
   const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
 
@@ -194,6 +201,12 @@ function tick() {
     honksEl.textContent = honkCount;
     spawnHonk(food.x * CELL + CELL/2, food.y * CELL + CELL/2);
     placeFood();
+    // Speed up every 2 food items, down to 60ms minimum
+    if (honkCount % 2 === 0 && gameSpeed > 60) {
+      gameSpeed = Math.max(60, gameSpeed - 15);
+      clearInterval(gameLoop);
+      gameLoop = setInterval(tick, gameSpeed);
+    }
   } else {
     snake.pop();
   }
@@ -288,13 +301,21 @@ function draw() {
 }
 
 document.addEventListener('keydown', e => {
+  if (e.key === 'p' || e.key === 'P') {
+    if (state === 'playing' || state === 'paused') {
+      paused = !paused;
+      state = paused ? 'paused' : 'playing';
+      document.getElementById('pause-overlay').style.display = paused ? 'flex' : 'none';
+    }
+    return;
+  }
   const map = {
     ArrowUp:[0,-1], ArrowDown:[0,1], ArrowLeft:[-1,0], ArrowRight:[1,0],
     w:[0,-1], s:[0,1], a:[-1,0], d:[1,0],
     W:[0,-1], S:[0,1], A:[-1,0], D:[1,0]
   };
   const d = map[e.key];
-  if (d) { e.preventDefault(); setDir(d[0], d[1]); }
+  if (d) { e.preventDefault(); if (!paused) setDir(d[0], d[1]); }
 });
 
 draw();

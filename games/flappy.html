@@ -180,10 +180,11 @@ const deadLabel = document.getElementById('dead-label');
 const deadBest = document.getElementById('dead-best');
 
 // Game state
-let state = 'idle'; // idle, playing, dead
-let bird, pipes, score, best, frame, particles;
+let state = 'idle'; // idle, playing, dead, paused
+let bird, pipes, score, best, frame, particles, prevState;
 best = parseInt(localStorage.getItem('flapsy_best') || 0);
 bestEl.textContent = 'BEST: ' + best;
+bird = initBird(); // init early for idle animation
 
 // Palette
 const SKY_TOP = '#0d1b2a';
@@ -483,14 +484,36 @@ function loop() {
 
   updateParticles();
 
-  // idle bobbing bird preview
+  // idle — bob the bird on canvas
   if (state === 'idle') {
-    // just show background
+    const t = Date.now() / 1000;
+    bird.y = H / 2 + Math.sin(t * 1.8) * 18;
+    bird.angle = Math.sin(t * 1.8) * 0.12;
+    bird.wingPhase = t * 3;
+    drawBird();
+  }
+
+  // paused overlay text
+  if (state === 'paused') {
+    ctx.fillStyle = 'rgba(5,5,10,0.7)';
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#FFD700';
+    ctx.font = 'bold 48px "Bebas Neue", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('PAUSED', W/2, H/2 - 10);
+    ctx.font = '12px "Space Mono", monospace';
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.fillText('PRESS P TO RESUME', W/2, H/2 + 24);
   }
 }
 
 // Input
 document.addEventListener('keydown', e => {
+  if (e.key === 'p' || e.key === 'P') {
+    if (state === 'playing') { prevState = state; state = 'paused'; }
+    else if (state === 'paused') { state = 'playing'; }
+    return;
+  }
   if (e.code === 'Space') { e.preventDefault(); flap(); }
 });
 document.addEventListener('touchstart', e => { e.preventDefault(); flap(); }, { passive: false });

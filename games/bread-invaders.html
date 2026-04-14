@@ -111,6 +111,7 @@ function loop(){
   frame++;
   if(state!=='playing'){draw();return;}
 
+
   // player move
   if(keys.left)player.x=Math.max(18,player.x-player.speed);
   if(keys.right)player.x=Math.min(W-18,player.x+player.speed);
@@ -238,6 +239,30 @@ function draw(){
   // lives
   ctx.font='16px serif';ctx.textAlign='left';
   for(let i=0;i<lives;i++)ctx.fillText('🪿',10+i*28,H-4);
+
+  // fire cooldown arc on cannon tip
+  const now=Date.now();
+  const cd=Math.min(1,(now-lastShot)/350);
+  if(cd<1){
+    ctx.save();ctx.translate(player.x,player.y-20);
+    ctx.strokeStyle=`rgba(118,255,3,${0.9*(1-cd)})`;
+    ctx.lineWidth=3;
+    ctx.beginPath();
+    ctx.arc(0,0,7,-Math.PI/2,-Math.PI/2+cd*Math.PI*2);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // paused overlay
+  if(state==='paused'){
+    ctx.fillStyle='rgba(0,0,0,0.82)';ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#76ff03';ctx.shadowBlur=20;ctx.shadowColor='#76ff03';
+    ctx.font='52px "VT323",monospace';ctx.textAlign='center';
+    ctx.fillText('[ PAUSED ]',W/2,H/2-10);
+    ctx.shadowBlur=0;
+    ctx.fillStyle='#4caf50';ctx.font='16px "Share Tech Mono",monospace';
+    ctx.fillText('PRESS P TO RESUME',W/2,H/2+28);
+  }
 }
 
 function gameOver(){
@@ -249,7 +274,14 @@ function gameOver(){
   overlay.classList.remove('hidden');
 }
 
+let invPaused=false;
 document.addEventListener('keydown',e=>{
+  if(e.key==='p'||e.key==='P'){
+    if(state==='playing'||state==='paused'){
+      invPaused=!invPaused;state=invPaused?'paused':'playing';
+    }
+    return;
+  }
   if(e.key==='ArrowLeft')keys.left=true;
   if(e.key==='ArrowRight')keys.right=true;
   if(e.key===' '){e.preventDefault();fireBullet();}
