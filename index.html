@@ -92,11 +92,15 @@
         const thumb = game.thumb
           ? `<div class="card-thumb"><img src="${game.thumb}" alt="${game.title}" loading="lazy"></div>`
           : `<div class="card-emoji-thumb"><span>${game.emoji}</span></div>`;
+        const originalBadge = game.original
+          ? `<span class="badge badge-original">🪿 Original</span>` : '';
         return `
         <a href="games/${game.filename}" class="game-card" data-category="${game.category}">
           ${thumb}
+          <div class="card-play-overlay"><div class="card-play-btn">▶ PLAY</div></div>
+          ${originalBadge ? `<div style="position:absolute;top:8px;left:8px;z-index:3">${originalBadge}</div>` : ''}
           <div class="card-body">
-            <div class="card-category">${game.category}</div>
+            <div class="card-category" data-cat="${game.category}">${game.category}</div>
             <div class="card-title">${game.title}</div>
             <div class="card-desc">${game.description}</div>
           </div>

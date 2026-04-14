@@ -6,7 +6,8 @@
     "thumb": "thumbs/flappy.jpg",
     "description": "Flap through the pipes without honking into them. A goose's guide to staying airborne.",
     "filename": "flappy.html",
-    "category": "arcade"
+    "category": "arcade",
+    "original": true
   },
   {
     "id": "goose-snake",
@@ -15,7 +16,8 @@
     "thumb": "thumbs/goose-snake.jpg",
     "description": "Slither around eating bread, avoid eating yourself. The eternal goose struggle.",
     "filename": "goose-snake.html",
-    "category": "arcade"
+    "category": "arcade",
+    "original": true
   },
   {
     "id": "goose-2048",
@@ -24,7 +26,8 @@
     "thumb": "thumbs/goose-2048.jpg",
     "description": "Merge geese to reach the legendary 2048 goose. How big can your flock get?",
     "filename": "goose-2048.html",
-    "category": "puzzle"
+    "category": "puzzle",
+    "original": true
   },
   {
     "id": "goose-breaker",
@@ -33,7 +36,8 @@
     "thumb": "thumbs/goose-breaker.jpg",
     "description": "Smash bricks with a goose paddle. Breakout, but with more honking.",
     "filename": "goose-breaker.html",
-    "category": "arcade"
+    "category": "arcade",
+    "original": true
   },
   {
     "id": "honk-tris",
@@ -42,7 +46,8 @@
     "thumb": "thumbs/honk-tris.jpg",
     "description": "Stack falling geese and clear lines before the pond overflows. HONK.",
     "filename": "honk-tris.html",
-    "category": "puzzle"
+    "category": "puzzle",
+    "original": true
   },
   {
     "id": "bread-invaders",
@@ -51,7 +56,8 @@
     "thumb": "thumbs/bread-invaders.jpg",
     "description": "Loaves of bread descend from the sky. Shoot them before they land. Don't ask why.",
     "filename": "bread-invaders.html",
-    "category": "arcade"
+    "category": "arcade",
+    "original": true
   },
   {
     "id": "goose-memory",
@@ -60,7 +66,8 @@
     "thumb": "thumbs/goose-memory.jpg",
     "description": "Flip cards and match pairs of geese. They all look the same — that's the point.",
     "filename": "goose-memory.html",
-    "category": "puzzle"
+    "category": "puzzle",
+    "original": true
   },
   {
     "id": "honkle",
@@ -69,7 +76,8 @@
     "thumb": "thumbs/honkle.jpg",
     "description": "Guess the 5-letter goose word in 6 tries. Every word honks.",
     "filename": "honkle.html",
-    "category": "puzzle"
+    "category": "puzzle",
+    "original": true
   },
   {
     "id": "nitro-racing",
